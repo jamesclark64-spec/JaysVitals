@@ -41,6 +41,12 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
 .date-box{text-align:right;font-family:'JetBrains Mono',monospace}
 .date-box strong{display:block;font-size:18px;color:var(--text)}
 .date-box small{font-size:11px;color:var(--muted);letter-spacing:1px}
+.sync-badge{display:inline-block;margin-top:5px;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;padding:3px 9px;border-radius:20px;font-family:'JetBrains Mono',monospace;transition:all .3s}
+.sync-none{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border)}
+.sync-ok{background:rgba(0,245,160,.1);color:var(--neon);border:1px solid rgba(0,245,160,.25)}
+.sync-busy{background:rgba(0,217,245,.1);color:var(--neon2);border:1px solid rgba(0,217,245,.25);animation:syncPulse 1s ease infinite}
+.sync-err{background:rgba(255,61,90,.1);color:var(--red);border:1px solid rgba(255,61,90,.25)}
+@keyframes syncPulse{0%,100%{opacity:.6}50%{opacity:1}}
 
 /* ── TABS ── */
 .tabs{display:flex;gap:2px;margin:28px 0 0;border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
@@ -323,6 +329,7 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
   <div class="date-box">
     <strong id="hdrDate">—</strong>
     <small id="hdrDay">—</small>
+    <div id="syncBadge" class="sync-badge sync-none">☁ NOT SYNCED</div>
   </div>
 </header>
 
@@ -447,7 +454,10 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
 
   <!-- AI Food Lookup -->
   <div class="card mb ai-card">
-    <div class="card-title" style="color:var(--purple)">🤖 AI FOOD LOOKUP</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:18px">
+      <div class="card-title" style="color:var(--purple);margin-bottom:0">🤖 AI FOOD LOOKUP</div>
+      <div id="aiKeyBadge" style="font-size:10px;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:20px;letter-spacing:1px"></div>
+    </div>
     <div style="font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:14px;line-height:1.6">
       Describe what you ate and Claude will estimate the calories, protein &amp; fibre — then you confirm before it's added.
     </div>
@@ -516,6 +526,12 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
   <div class="card mt20" id="weeklySummaryCard">
     <div class="card-title">📊 WEEK IN REVIEW</div>
     <div id="weeklySummaryContent"><div class="empty"><div class="ei">📭</div><p>Log at least a few days to see your weekly summary!</p></div></div>
+  </div>
+
+  <!-- 7-day Macro Stats -->
+  <div class="card mt20" id="macroStatsCard" style="border-color:rgba(0,217,245,.15)">
+    <div class="card-title" style="color:var(--neon2)">💪🌾 NUTRITION STATS — LAST 7 DAYS</div>
+    <div id="macroStatsContent"><div class="empty" style="padding:24px 0"><div class="ei" style="font-size:32px">🤖</div><p>Use the AI food lookup to start tracking protein &amp; fibre!</p></div></div>
   </div>
 </div>
 
@@ -816,7 +832,7 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
       <div class="chart-wrap"><canvas id="stomachChart"></canvas></div>
     </div>
   </div>
-  <div class="g2">
+  <div class="g2 mb">
     <div class="card">
       <div class="card-title" style="color:var(--neon)">📊 BMI OVER TIME</div>
       <div class="chart-wrap"><canvas id="bmiChart"></canvas></div>
@@ -824,6 +840,16 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
     <div class="card">
       <div class="card-title" style="color:var(--neon2)">💧 WATER (LAST 14 DAYS)</div>
       <div class="chart-wrap"><canvas id="waterChart"></canvas></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="card-title" style="color:var(--neon2)">💪 PROTEIN (30 DAYS)</div>
+      <div class="chart-wrap"><canvas id="proteinChart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:var(--orange)">🌾 FIBRE (30 DAYS)</div>
+      <div class="chart-wrap"><canvas id="fibreChart"></canvas></div>
     </div>
   </div>
 </div>
@@ -858,6 +884,12 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
   <div class="card">
     <div class="card-title" style="color:var(--neon2)">💧 DAILY LOG</div>
     <div id="dailyHistTable"><div class="empty"><div class="ei">📭</div><p>No daily logs yet.</p></div></div>
+  </div>
+
+  <div class="card mt16" style="border-color:rgba(0,217,245,.15)">
+    <div class="card-title" style="color:var(--neon2)">💪🌾 PROTEIN & FIBRE LOG</div>
+    <div style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:14px">Only days with protein or fibre data logged are shown. Use the AI food lookup to start building this record.</div>
+    <div id="macroHistTable"><div class="empty"><div class="ei">📭</div><p>No macro data yet. Try the AI food lookup!</p></div></div>
   </div>
 </div>
 
@@ -910,6 +942,47 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
       </div>
       <button class="btn btn-blue" onclick="exportCSV()" style="white-space:nowrap">📥 Export CSV</button>
     </div>
+  </div>
+
+  <!-- JSONBin Sync card -->
+  <div class="card mt16" style="border-color:rgba(0,217,245,.2)">
+    <div class="card-title" style="color:var(--neon2)">☁️ CLOUD SYNC — JSONBIN</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.8">
+      Sync your data across devices using <strong style="color:var(--text)">JSONBin.io</strong> — it's free!<br>
+      <strong style="color:var(--neon2)">Step 1:</strong> Go to <strong>jsonbin.io</strong> → sign in → click <strong>API Keys</strong> → copy your <strong>Master Key</strong><br>
+      <strong style="color:var(--neon2)">Step 2:</strong> Paste it below and click <strong>Connect</strong> — a cloud bin will be created for you automatically.<br>
+      <strong style="color:var(--neon2)">Step 3:</strong> On any other device, repeat Steps 1–2 with the same key. Your data will appear instantly.
+    </div>
+    <div class="flex gap8 aic wrap-flex" style="margin-bottom:10px">
+      <div class="inp-wrap" style="flex:1;max-width:480px">
+        <input type="password" id="settingJbKey" placeholder="$2b$10$… (Master Key from jsonbin.io)" style="font-size:13px;font-weight:400;letter-spacing:.5px;padding-right:12px">
+      </div>
+      <button class="btn" onclick="connectJsonBin()" style="background:linear-gradient(135deg,var(--neon2),var(--neon));color:#000;white-space:nowrap">Connect</button>
+      <button class="btn btn-ghost" onclick="clearJsonBin()" style="white-space:nowrap">Disconnect</button>
+    </div>
+    <div id="jbStatus" style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted);line-height:1.7">No cloud sync configured.</div>
+    <div class="flex gap8 wrap-flex mt12" id="jbActions" style="display:none!important">
+      <button class="btn" onclick="pushToCloud(true)" style="background:linear-gradient(135deg,var(--neon2),var(--neon));color:#000;font-size:12px;padding:10px 18px">⬆ Push to Cloud</button>
+      <button class="btn btn-ghost" onclick="pullFromCloud(true)" style="font-size:12px;padding:10px 18px">⬇ Pull from Cloud</button>
+    </div>
+  </div>
+
+  <!-- API Key card -->
+  <div class="card mt16" style="border-color:rgba(168,85,247,.2)">
+    <div class="card-title" style="color:var(--purple)">🤖 AI FOOD LOOKUP — API KEY</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.7">
+      The AI food lookup uses the <strong style="color:var(--text)">Anthropic API</strong>. You need a free API key to use it.<br>
+      Get one at <strong style="color:var(--purple)">console.anthropic.com</strong> → API Keys → Create Key.<br>
+      Your key is stored locally in your browser only — never sent anywhere except Anthropic's servers.
+    </div>
+    <div class="flex gap8 aic wrap-flex">
+      <div class="inp-wrap" style="flex:1;max-width:480px">
+        <input type="password" id="settingApiKey" placeholder="sk-ant-api03-…" style="font-size:13px;font-weight:400;letter-spacing:.5px;padding-right:12px">
+      </div>
+      <button class="btn" onclick="saveApiKey()" style="background:linear-gradient(135deg,var(--purple),#7c3aed);box-shadow:0 4px 16px rgba(168,85,247,.3);white-space:nowrap">Save Key</button>
+      <button class="btn btn-ghost" onclick="clearApiKey()" style="white-space:nowrap">Clear</button>
+    </div>
+    <div id="apiKeyStatus" style="margin-top:10px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted)">No key saved yet.</div>
   </div>
 
   <!-- Current Goals Display -->
@@ -1013,6 +1086,223 @@ function sd(data) {
   localStorage.setItem('v_daily',    JSON.stringify(data.daily));
   localStorage.setItem('v_exercise', JSON.stringify(data.exercise));
   localStorage.setItem('v_goals',    JSON.stringify(data.goals));
+  // Auto-push to cloud after every save (non-blocking)
+  pushToCloud(false);
+}
+
+// ═══════════════════════════════════════════════════════════
+//  JSONBIN CLOUD SYNC
+// ═══════════════════════════════════════════════════════════
+const JB_BASE = 'https://api.jsonbin.io/v3';
+
+function getJbKey()  { return localStorage.getItem('v_jb_key')  || ''; }
+function getJbBinId(){ return localStorage.getItem('v_jb_bin')  || ''; }
+
+function setSyncBadge(state, msg) {
+  const b = document.getElementById('syncBadge');
+  b.className = 'sync-badge sync-' + state;
+  b.textContent = msg;
+}
+
+function updateJbStatus() {
+  const key   = getJbKey();
+  const binId = getJbBinId();
+  const el    = document.getElementById('jbStatus');
+  const acts  = document.getElementById('jbActions');
+  if (!key) {
+    el.textContent = 'No cloud sync configured.';
+    el.style.color = 'var(--muted)';
+    acts.style.display = 'none';
+    setSyncBadge('none', '☁ NOT SYNCED');
+    return;
+  }
+  if (binId) {
+    el.innerHTML = `✅ Connected · Bin ID: <strong style="color:var(--neon2)">${binId}</strong><br>Data auto-syncs on every save and on page load.`;
+    el.style.color = 'var(--neon)';
+    acts.style.removeProperty('display');
+    setSyncBadge('ok', '☁ SYNCED');
+  } else {
+    el.textContent = 'Key saved — click Connect to create your cloud bin.';
+    el.style.color = 'var(--orange)';
+    acts.style.display = 'none';
+    setSyncBadge('none', '☁ NOT SYNCED');
+  }
+  const keyInput = document.getElementById('settingJbKey');
+  if (keyInput && key) keyInput.value = key;
+}
+
+async function connectJsonBin() {
+  const key = document.getElementById('settingJbKey').value.trim();
+  if (!key) { showToast('⚠️ Paste your JSONBin Master Key first'); return; }
+
+  setSyncBadge('busy', '☁ CONNECTING…');
+  showToast('⏳ Connecting to JSONBin…');
+
+  try {
+    // If we already have a bin ID for this key, just verify it works
+    const existingBin = getJbBinId();
+    if (getJbKey() === key && existingBin) {
+      const test = await fetch(`${JB_BASE}/b/${existingBin}/latest`, {
+        headers: { 'X-Master-Key': key }
+      });
+      if (test.ok) {
+        localStorage.setItem('v_jb_key', key);
+        updateJbStatus();
+        await pullFromCloud(false);
+        showToast('✅ Already connected — data pulled!');
+        return;
+      }
+    }
+
+    // Check if a bin already exists with name "jays-vitals"
+    const listResp = await fetch(`${JB_BASE}/b`, {
+      headers: { 'X-Master-Key': key }
+    });
+
+    let binId = null;
+    if (listResp.ok) {
+      const list = await listResp.json();
+      const existing = (list || []).find(b => b.record?.name === 'jays-vitals');
+      if (existing) binId = existing.record?.id;
+    }
+
+    // No existing bin — create one with current local data
+    if (!binId) {
+      const payload = ld();
+      const createResp = await fetch(`${JB_BASE}/b`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Master-Key': key,
+          'X-Bin-Name': 'jays-vitals',
+          'X-Bin-Private': 'true',
+        },
+        body: JSON.stringify(payload)
+      });
+      if (!createResp.ok) throw new Error('Could not create bin: ' + createResp.status);
+      const created = await createResp.json();
+      binId = created.metadata?.id;
+      if (!binId) throw new Error('No bin ID returned');
+      showToast('✅ Cloud bin created and data uploaded!');
+    } else {
+      showToast('✅ Existing bin found — pulling your data…');
+    }
+
+    localStorage.setItem('v_jb_key', key);
+    localStorage.setItem('v_jb_bin', binId);
+    updateJbStatus();
+
+    // Pull data from cloud (it may have more recent data from another device)
+    await pullFromCloud(false);
+    refreshAll();
+
+  } catch (err) {
+    setSyncBadge('err', '☁ ERROR');
+    showToast('❌ ' + (err.message || 'Could not connect to JSONBin'));
+    console.error(err);
+  }
+}
+
+async function pushToCloud(showFeedback = false) {
+  const key   = getJbKey();
+  const binId = getJbBinId();
+  if (!key || !binId) return;
+
+  if (showFeedback) setSyncBadge('busy', '☁ SAVING…');
+  try {
+    const payload = ld();
+    const resp = await fetch(`${JB_BASE}/b/${binId}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': key,
+      },
+      body: JSON.stringify(payload)
+    });
+    if (!resp.ok) throw new Error('Push failed: ' + resp.status);
+    const now = new Date().toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
+    setSyncBadge('ok', '☁ SYNCED ' + now);
+    if (showFeedback) showToast('⬆ Data pushed to cloud!');
+  } catch (err) {
+    setSyncBadge('err', '☁ SYNC FAILED');
+    if (showFeedback) showToast('❌ Push failed: ' + (err.message || 'unknown error'));
+  }
+}
+
+async function pullFromCloud(showFeedback = false) {
+  const key   = getJbKey();
+  const binId = getJbBinId();
+  if (!key || !binId) return;
+
+  if (showFeedback) setSyncBadge('busy', '☁ LOADING…');
+  try {
+    const resp = await fetch(`${JB_BASE}/b/${binId}/latest`, {
+      headers: { 'X-Master-Key': key }
+    });
+    if (!resp.ok) throw new Error('Pull failed: ' + resp.status);
+    const json   = await resp.json();
+    const remote = json.record;
+
+    // Merge strategy: take the longer array per category (most data wins)
+    const merge = (local, cloud) => {
+      if (!cloud || !cloud.length) return local;
+      if (!local || !local.length) return cloud;
+      // Build a map by date from both, cloud wins on conflicts
+      const map = {};
+      local.forEach(e => { map[e.date] = e; });
+      cloud.forEach(e => { map[e.date] = e; }); // cloud overwrites
+      return Object.values(map).sort((a,b) => a.date.localeCompare(b.date));
+    };
+
+    const local = ld();
+    const merged = {
+      calories: merge(local.calories, remote.calories),
+      checkins: merge(local.checkins, remote.checkins),
+      daily:    merge(local.daily,    remote.daily),
+      exercise: merge(local.exercise, remote.exercise),
+      goals:    remote.goals || local.goals,
+    };
+
+    // Write merged data to localStorage (without triggering another push)
+    localStorage.setItem('v_calories', JSON.stringify(merged.calories));
+    localStorage.setItem('v_checkins', JSON.stringify(merged.checkins));
+    localStorage.setItem('v_daily',    JSON.stringify(merged.daily));
+    localStorage.setItem('v_exercise', JSON.stringify(merged.exercise));
+    localStorage.setItem('v_goals',    JSON.stringify(merged.goals));
+
+    const now = new Date().toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
+    setSyncBadge('ok', '☁ SYNCED ' + now);
+    if (showFeedback) { showToast('⬇ Cloud data pulled and merged!'); refreshAll(); }
+  } catch (err) {
+    setSyncBadge('err', '☁ SYNC FAILED');
+    if (showFeedback) showToast('❌ Pull failed: ' + (err.message || 'unknown error'));
+  }
+}
+
+function clearJsonBin() {
+  if (!confirm('Disconnect cloud sync? Your local data stays intact.')) return;
+  localStorage.removeItem('v_jb_key');
+  localStorage.removeItem('v_jb_bin');
+  document.getElementById('settingJbKey').value = '';
+  updateJbStatus();
+  showToast('☁ Cloud sync disconnected');
+}
+
+function refreshAll() {
+  loadSettings();
+  loadTodayCal();
+  loadTodayExercise();
+  calcCal();
+  loadDailyLog();
+  buildWaterGlasses();
+  initCheckinPanel();
+  updateCheckinStats();
+  updateCalStats();
+  buildWeeklySummary();
+  buildMacroStats();
+  buildHomeGoalBar();
+  buildGoalWeightCard();
+  buildHistoryTables();
 }
 
 function todayStr() { return new Date().toISOString().slice(0,10); }
@@ -1033,12 +1323,17 @@ function nextSundayDate() {
 // ═══════════════════════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════════════════════
-window.addEventListener('DOMContentLoaded', () => {
-  // Header
+window.addEventListener('DOMContentLoaded', async () => {
+  // Header date
   const now = new Date();
   document.getElementById('hdrDate').textContent = now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
   document.getElementById('hdrDay').textContent  = now.toLocaleDateString('en-GB',{weekday:'long'}).toUpperCase();
 
+  // Pull from cloud first if configured (silently merges into localStorage)
+  updateJbStatus();
+  await pullFromCloud(false);
+
+  // Then build the UI from (now up-to-date) localStorage
   loadSettings();
   loadTodayCal();
   loadTodayExercise();
@@ -1050,10 +1345,13 @@ window.addEventListener('DOMContentLoaded', () => {
   updateCheckinStats();
   updateCalStats();
   buildWeeklySummary();
+  buildMacroStats();
   buildHomeGoalBar();
   buildGoalWeightCard();
   buildHistoryTables();
   initSettingsInputs();
+  refreshApiKeyStatus();
+  updateJbStatus();
 });
 
 // ═══════════════════════════════════════════════════════════
@@ -1081,6 +1379,10 @@ function initSettingsInputs() {
   document.getElementById('settingCalGoal').value   = goals.cal || 2500;
   document.getElementById('settingGoalWt').value    = goals.weight || '';
   document.getElementById('settingWaterGoal').value = goals.water || 8;
+  const apiKey = getApiKey();
+  if (apiKey) document.getElementById('settingApiKey').value = apiKey;
+  const jbKey = getJbKey();
+  if (jbKey) document.getElementById('settingJbKey').value = jbKey;
 }
 
 function saveGoal(type) {
@@ -1255,7 +1557,7 @@ function saveCalories() {
   const idx = data.calories.findIndex(x => x.date === today);
   if (idx >= 0) data.calories[idx] = entry; else data.calories.push(entry);
   data.calories.sort((a,b) => a.date.localeCompare(b.date));
-  sd(data); updateCalStats(); buildWeeklySummary(); buildHistoryTables();
+  sd(data); updateCalStats(); buildWeeklySummary(); buildMacroStats(); buildHistoryTables();
   showToast('✅ Saved! ' + (totalPro>0?totalPro+'g protein · ':'') + (totalFib>0?totalFib+'g fibre':''));
 }
 
@@ -1269,9 +1571,53 @@ function clearCal() {
 // ═══════════════════════════════════════════════════════════
 //  AI FOOD LOOKUP
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+//  API KEY MANAGEMENT
+// ═══════════════════════════════════════════════════════════
+function getApiKey() { return localStorage.getItem('v_api_key') || ''; }
+
+function saveApiKey() {
+  const key = document.getElementById('settingApiKey').value.trim();
+  if (!key.startsWith('sk-ant-')) { showToast('⚠️ Key should start with sk-ant-…'); return; }
+  localStorage.setItem('v_api_key', key);
+  refreshApiKeyStatus();
+  showToast('✅ API key saved!');
+}
+
+function clearApiKey() {
+  localStorage.removeItem('v_api_key');
+  document.getElementById('settingApiKey').value = '';
+  refreshApiKeyStatus();
+  showToast('🗑 API key cleared');
+}
+
+function refreshApiKeyStatus() {
+  const key  = getApiKey();
+  const has  = !!key;
+  // Settings page status
+  const statusEl = document.getElementById('apiKeyStatus');
+  if (statusEl) statusEl.textContent = has ? '✅ Key saved — ' + key.slice(0,12) + '…' : 'No key saved yet.';
+  if (statusEl) statusEl.style.color = has ? 'var(--neon)' : 'var(--muted)';
+  // Badge on AI card
+  const badge = document.getElementById('aiKeyBadge');
+  if (badge) {
+    badge.textContent    = has ? '✅ KEY ACTIVE' : '⚠️ NO KEY — SET IN GOALS TAB';
+    badge.style.background  = has ? 'rgba(0,245,160,.1)'  : 'rgba(255,140,66,.1)';
+    badge.style.color       = has ? 'var(--neon)'         : 'var(--orange)';
+    badge.style.border      = has ? '1px solid rgba(0,245,160,.25)' : '1px solid rgba(255,140,66,.25)';
+  }
+}
+
 let aiPendingItem = null;
 
 async function aiLookup() {
+  const key = getApiKey();
+  if (!key) {
+    showToast('⚠️ Add your Anthropic API key in the Goals tab first!');
+    tab('settings');
+    return;
+  }
+
   const input = document.getElementById('aiFoodInput').value.trim();
   if (!input) { document.getElementById('aiFoodInput').focus(); return; }
 
@@ -1284,30 +1630,40 @@ async function aiLookup() {
 
   try {
     const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-haiku-4-5-20251001',
         max_tokens: 300,
-        system: `You are a nutrition expert. The user describes food they ate. 
+        system: `You are a nutrition expert. The user describes food they ate.
 Return ONLY valid JSON — no markdown, no explanation — in this exact shape:
 {"food":"short food name","kcal":number,"protein":number,"fibre":number,"note":"brief note e.g. estimate based on standard serving"}
 - kcal, protein, fibre must be integers (round to nearest whole number)
 - protein and fibre in grams
 - If quantities are unclear, assume a typical single serving
 - Never return anything outside the JSON object`,
-        messages:[{ role:'user', content: input }]
+        messages: [{ role: 'user', content: input }]
       })
     });
 
-    const data = await resp.json();
-    const text = data.content?.[0]?.text || '';
-    // Strip any accidental markdown fences
-    const clean = text.replace(/```[a-z]*\n?/g,'').replace(/```/g,'').trim();
+    if (!resp.ok) {
+      const errBody = await resp.json().catch(() => ({}));
+      const msg = errBody?.error?.message || `API error ${resp.status}`;
+      throw new Error(msg);
+    }
+
+    const data   = await resp.json();
+    const text   = data.content?.[0]?.text || '';
+    const clean  = text.replace(/```[a-z]*\n?/g, '').replace(/```/g, '').trim();
     const result = JSON.parse(clean);
 
     aiPendingItem = {
-      name:    result.food || input,
+      name:    result.food    || input,
       kcal:    Math.round(result.kcal    || 0),
       protein: Math.round(result.protein || 0),
       fibre:   Math.round(result.fibre   || 0),
@@ -1322,13 +1678,13 @@ Return ONLY valid JSON — no markdown, no explanation — in this exact shape:
     document.getElementById('aiConfirmMeal').textContent   = meal;
     document.getElementById('aiResult').style.display = 'block';
 
-  } catch(err) {
+  } catch (err) {
     const errEl = document.getElementById('aiError');
-    errEl.textContent = '⚠️ Could not get nutrition data. Check your connection and try again.';
+    errEl.textContent = '⚠️ ' + (err.message || 'Could not get nutrition data. Check your API key and connection.');
     errEl.style.display = 'block';
   } finally {
     document.getElementById('aiLoading').style.display = 'none';
-    btn.disabled = false;
+    btn.disabled    = false;
     btn.textContent = '🔍 Look Up';
   }
 }
@@ -1368,6 +1724,57 @@ function updateCalStats() {
     if (dset.has(s)) { streak++; chk.setDate(chk.getDate()-1); } else break;
   }
   document.getElementById('streakNum').textContent = streak;
+}
+
+function buildMacroStats() {
+  const { calories } = ld();
+  const el = document.getElementById('macroStatsContent');
+  const days = calories.filter(e => (e.protein||0) > 0 || (e.fibre||0) > 0);
+  if (!days.length) {
+    el.innerHTML = '<div class="empty" style="padding:24px 0"><div class="ei" style="font-size:32px">🤖</div><p>Use the AI food lookup to start tracking protein &amp; fibre!</p></div>';
+    return;
+  }
+  const last7 = days.slice(-7);
+  const avgPro7 = last7.length ? Math.round(last7.reduce((s,e)=>s+(e.protein||0),0)/last7.length) : 0;
+  const avgFib7 = last7.length ? Math.round(last7.reduce((s,e)=>s+(e.fibre||0),0)/last7.length) : 0;
+  const bestPro = Math.max(...days.map(e=>e.protein||0));
+  const bestFib = Math.max(...days.map(e=>e.fibre||0));
+  // Recommended daily: ~55g protein, ~30g fibre for adult male
+  const proGoal = 55, fibGoal = 30;
+  const proPct = Math.min(100, Math.round(avgPro7/proGoal*100));
+  const fibPct = Math.min(100, Math.round(avgFib7/fibGoal*100));
+  el.innerHTML = `
+    <div class="g2" style="gap:14px;margin-bottom:16px">
+      <div style="background:rgba(0,217,245,.06);border:1px solid rgba(0,217,245,.18);border-radius:14px;padding:18px">
+        <div style="font-size:10px;letter-spacing:2px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:8px">💪 PROTEIN — 7-DAY AVG</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:2px;line-height:1;color:var(--neon2)">${avgPro7}<span style="font-size:20px">g</span></div>
+        <div style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin:6px 0 10px">of ~${proGoal}g recommended</div>
+        <div style="height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden">
+          <div style="height:100%;width:${proPct}%;background:linear-gradient(90deg,var(--neon2),var(--neon));border-radius:4px;transition:width 1s"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--muted)">
+          <span>Best day: <strong style="color:var(--neon2)">${bestPro}g</strong></span>
+          <span>${proPct}% of goal</span>
+        </div>
+      </div>
+      <div style="background:rgba(255,140,66,.06);border:1px solid rgba(255,140,66,.18);border-radius:14px;padding:18px">
+        <div style="font-size:10px;letter-spacing:2px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:8px">🌾 FIBRE — 7-DAY AVG</div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:48px;letter-spacing:2px;line-height:1;color:var(--orange)">${avgFib7}<span style="font-size:20px">g</span></div>
+        <div style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin:6px 0 10px">of ~${fibGoal}g recommended</div>
+        <div style="height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden">
+          <div style="height:100%;width:${fibPct}%;background:linear-gradient(90deg,var(--orange),#ffd700);border-radius:4px;transition:width 1s"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-top:10px;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--muted)">
+          <span>Best day: <strong style="color:var(--orange)">${bestFib}g</strong></span>
+          <span>${fibPct}% of goal</span>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;line-height:1.7;padding:10px 14px;background:rgba(255,255,255,.02);border-radius:10px">
+      📊 Based on <strong style="color:var(--text)">${days.length}</strong> days with macro data · 
+      Averages use the last 7 logged days · 
+      Check the Analytics tab for full charts
+    </div>`;
 }
 
 function buildWeeklySummary() {
@@ -1730,7 +2137,7 @@ function buildGoalWeightCard() {
 // ═══════════════════════════════════════════════════════════
 //  CHARTS
 // ═══════════════════════════════════════════════════════════
-let calInst, wInst, stInst, bmiInst, waterInst;
+let calInst, wInst, stInst, bmiInst, waterInst, proteinInst, fibreInst;
 
 const cDef = {
   responsive:true, maintainAspectRatio:false,
@@ -1806,6 +2213,49 @@ function buildCharts() {
       options:{...cDef,scales:{...cDef.scales,y:{...cDef.scales.y,min:0}}}
     });
   }
+
+  // PROTEIN bar
+  const macroData = calories.slice(-30);
+  if (proteinInst) proteinInst.destroy();
+  if (macroData.some(e => (e.protein||0) > 0)) {
+    const pCtx = document.getElementById('proteinChart').getContext('2d');
+    const pGrad = pCtx.createLinearGradient(0,0,0,250);
+    pGrad.addColorStop(0,'rgba(0,217,245,.7)'); pGrad.addColorStop(1,'rgba(0,217,245,.25)');
+    proteinInst = new Chart(pCtx, {
+      type: 'bar',
+      data: {
+        labels: macroData.map(e => fmtDate(e.date)),
+        datasets: [{
+          label:'Protein (g)', data: macroData.map(e => e.protein||0),
+          backgroundColor: pGrad, borderColor:'#00d9f5', borderWidth:1, borderRadius:5
+        }]
+      },
+      options: { ...cDef, scales:{ ...cDef.scales, y:{ ...cDef.scales.y, min:0,
+        ticks:{ ...cDef.scales.y.ticks, callback: v => v+'g' }
+      }}}
+    });
+  }
+
+  // FIBRE bar
+  if (fibreInst) fibreInst.destroy();
+  if (macroData.some(e => (e.fibre||0) > 0)) {
+    const fCtx = document.getElementById('fibreChart').getContext('2d');
+    const fGrad = fCtx.createLinearGradient(0,0,0,250);
+    fGrad.addColorStop(0,'rgba(255,140,66,.7)'); fGrad.addColorStop(1,'rgba(255,140,66,.2)');
+    fibreInst = new Chart(fCtx, {
+      type: 'bar',
+      data: {
+        labels: macroData.map(e => fmtDate(e.date)),
+        datasets: [{
+          label:'Fibre (g)', data: macroData.map(e => e.fibre||0),
+          backgroundColor: fGrad, borderColor:'#ff8c42', borderWidth:1, borderRadius:5
+        }]
+      },
+      options: { ...cDef, scales:{ ...cDef.scales, y:{ ...cDef.scales.y, min:0,
+        ticks:{ ...cDef.scales.y.ticks, callback: v => v+'g' }
+      }}}
+    });
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1840,11 +2290,12 @@ function buildHistoryTables() {
     const rows = [...calories].reverse().map(e => {
       const over = e.total - CALORIE_GOAL;
       const badge = e.total <= CALORIE_GOAL ? `<span class="badge badge-ok">ON TRACK</span>` : over<=300 ? `<span class="badge badge-warn">+${over}</span>` : `<span class="badge badge-red">+${over}</span>`;
-      // Build item tooltip strings per meal
       const itemStr = (meal) => {
         if (!e.items || !e.items[meal] || !e.items[meal].length) return e[meal] ? e[meal]+' kcal' : '—';
         return e.items[meal].map(i => i.name + ' ' + i.kcal).join(', ');
       };
+      const pro = e.protein || 0;
+      const fib = e.fibre   || 0;
       return `<tr>
         <td>${fmtDate(e.date)}</td>
         <td title="${itemStr('breakfast')}">${e.breakfast||0}</td>
@@ -1852,6 +2303,8 @@ function buildHistoryTables() {
         <td title="${itemStr('tea')}">${e.tea||0}</td>
         <td title="${itemStr('snacks')}">${e.snacks||0}</td>
         <td style="font-weight:700">${e.total.toLocaleString()}</td>
+        <td style="color:var(--neon2);font-weight:600">${pro > 0 ? pro+'g' : '—'}</td>
+        <td style="color:var(--orange);font-weight:600">${fib > 0 ? fib+'g' : '—'}</td>
         <td>${badge}</td>
         <td style="white-space:nowrap">
           <button class="row-btn" onclick="openEdit('cal','${e.date}')">&#9998; Edit</button>
@@ -1859,11 +2312,49 @@ function buildHistoryTables() {
         </td>
       </tr>`;
     }).join('');
-    calEl.innerHTML = `<table class="htable"><thead><tr><th>Date</th><th>🌅 Bkfast</th><th>🌤 Lunch</th><th>🌙 Tea</th><th>🍫 Snacks</th><th>Total</th><th>Status</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
+    calEl.innerHTML = `<table class="htable"><thead><tr><th>Date</th><th>🌅 Bkfast</th><th>🌤 Lunch</th><th>🌙 Tea</th><th>🍫 Snacks</th><th>Total</th><th>💪 Protein</th><th>🌾 Fibre</th><th>Status</th><th></th></tr></thead><tbody>${rows}</tbody></table>`;
   }
 
-  // Checkin
-  const ciEl = document.getElementById('checkinHistTable');
+  // Macro history — only days with any protein or fibre data
+  const macroEl = document.getElementById('macroHistTable');
+  const macroDays = [...calories].filter(e => (e.protein||0) > 0 || (e.fibre||0) > 0).reverse();
+  if (!macroDays.length) {
+    macroEl.innerHTML = '<div class="empty"><div class="ei">📭</div><p>No macro data yet. Try the AI food lookup!</p></div>';
+  } else {
+    const avg = (arr, key) => arr.length ? Math.round(arr.reduce((s,e) => s + (e[key]||0), 0) / arr.length) : 0;
+    const avgPro = avg(macroDays, 'protein'), avgFib = avg(macroDays, 'fibre');
+    const rows = macroDays.map(e => {
+      const pro = e.protein || 0, fib = e.fibre || 0;
+      const proBar = Math.min(100, Math.round(pro / Math.max(avgPro * 1.5, 1) * 100));
+      const fibBar = Math.min(100, Math.round(fib / Math.max(avgFib * 1.5, 25) * 100));
+      return `<tr>
+        <td>${fmtDate(e.date)}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-weight:700;color:var(--neon2);font-family:'JetBrains Mono',monospace;min-width:36px">${pro}g</span>
+            <div style="flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;min-width:60px;max-width:120px">
+              <div style="height:100%;width:${proBar}%;background:var(--neon2);border-radius:3px;transition:width .6s"></div>
+            </div>
+          </div>
+        </td>
+        <td>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-weight:700;color:var(--orange);font-family:'JetBrains Mono',monospace;min-width:36px">${fib}g</span>
+            <div style="flex:1;height:6px;background:rgba(255,255,255,.06);border-radius:3px;min-width:60px;max-width:120px">
+              <div style="height:100%;width:${fibBar}%;background:var(--orange);border-radius:3px;transition:width .6s"></div>
+            </div>
+          </div>
+        </td>
+        <td style="color:var(--muted);font-size:11px">${e.total.toLocaleString()} kcal</td>
+      </tr>`;
+    }).join('');
+    macroEl.innerHTML = `
+      <div style="display:flex;gap:16px;margin-bottom:14px;flex-wrap:wrap">
+        <div style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted)">7-DAY AVG: <strong style="color:var(--neon2)">${avg(macroDays.slice(0,7),'protein')}g protein</strong> · <strong style="color:var(--orange)">${avg(macroDays.slice(0,7),'fibre')}g fibre</strong></div>
+        <div style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted)">ALL-TIME AVG: <strong style="color:var(--neon2)">${avgPro}g protein</strong> · <strong style="color:var(--orange)">${avgFib}g fibre</strong></div>
+      </div>
+      <table class="htable"><thead><tr><th>Date</th><th>💪 Protein</th><th>🌾 Fibre</th><th>Calories</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }
   if (!checkins.length) { ciEl.innerHTML = '<div class="empty"><div class="ei">📭</div><p>No check-ins yet!</p></div>'; }
   else {
     const rows = [...checkins].reverse().map((e,i,arr) => {
@@ -1916,8 +2407,8 @@ function buildHistoryTables() {
 function exportCSV() {
   const { calories, checkins, daily, exercise } = ld();
   let csv = 'JAY\'S VITALS EXPORT\n\n';
-  csv += 'CALORIE LOG\nDate,Breakfast,Lunch,Tea,Snacks,Total\n';
-  calories.forEach(e => { csv += `${e.date},${e.breakfast||0},${e.lunch||0},${e.tea||0},${e.snacks||0},${e.total}\n`; });
+  csv += 'CALORIE LOG\nDate,Breakfast,Lunch,Tea,Snacks,Total,Protein(g),Fibre(g)\n';
+  calories.forEach(e => { csv += `${e.date},${e.breakfast||0},${e.lunch||0},${e.tea||0},${e.snacks||0},${e.total},${e.protein||0},${e.fibre||0}\n`; });
   csv += '\nEXERCISE LOG\nDate,Total Burned,Activities\n';
   exercise.forEach(e => {
     const acts = e.activities.map(a=>`${a.name} ${a.mins?'('+a.mins+'min)':''} ${a.kcal}kcal`).join(' | ');
@@ -1946,7 +2437,7 @@ function tab(name) {
   document.getElementById('panel-' + name).classList.add('active');
   if (name === 'charts')   setTimeout(buildCharts, 60);
   if (name === 'history')  buildHistoryTables();
-  if (name === 'settings') initSettingsInputs();
+  if (name === 'settings') { initSettingsInputs(); refreshApiKeyStatus(); updateJbStatus(); }
   if (name === 'checkin')  { updateCheckinStats(); buildGoalWeightCard(); buildHomeGoalBar(); }
   if (name === 'exercise') { loadTodayExercise(); renderExLogged(); }
 }
@@ -2159,7 +2650,7 @@ function saveEdit() {
     if (idx >= 0) data.calories[idx] = entry; else { data.calories.push(entry); data.calories.sort((a,b)=>a.date.localeCompare(b.date)); }
     // If editing today, reload the live items
     if (modalDate === todayStr()) { loadTodayCal(); calcCal(); }
-    sd(data); updateCalStats(); buildWeeklySummary();
+    sd(data); updateCalStats(); buildWeeklySummary(); buildMacroStats();
   } else if (modalType === 'checkin') {
     const kg = +document.getElementById('eWeight').value, st = +document.getElementById('eStomach').value;
     if (!kg||kg<20) { showToast('Enter valid weight'); return; }
@@ -2187,7 +2678,7 @@ function deleteEntry() {
 
 function quickDelete(type, date) {
   const data = ld();
-  if (type==='cal')      { data.calories=data.calories.filter(x=>x.date!==date); updateCalStats(); buildWeeklySummary(); }
+  if (type==='cal')      { data.calories=data.calories.filter(x=>x.date!==date); updateCalStats(); buildWeeklySummary(); buildMacroStats(); }
   if (type==='checkin')  { data.checkins=data.checkins.filter(x=>x.date!==date); updateCheckinStats(); buildGoalWeightCard(); buildHomeGoalBar(); buildWeeklySummary(); }
   if (type==='daily')    { data.daily=data.daily.filter(x=>x.date!==date); buildWeeklySummary(); }
   if (type==='exercise') { data.exercise=data.exercise.filter(x=>x.date!==date); if(date===todayStr()){todayActivities=[];renderExLogged();calcCal();} }
