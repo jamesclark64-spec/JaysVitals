@@ -937,11 +937,19 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
 
     <div class="settings-row" style="border-bottom:none">
       <div class="info">
-        <div class="title">📥 Export Data</div>
-        <div class="desc">Download all your tracked data as a CSV spreadsheet. Great for backup or sharing with a nutritionist.</div>
+        <div class="title">📥 Export / Import Data</div>
+        <div class="desc">Export all your data as CSV for backup. Import a previous CSV export to restore your history.</div>
       </div>
-      <button class="btn btn-blue" onclick="exportCSV()" style="white-space:nowrap">📥 Export CSV</button>
+      <div class="flex gap8 wrap-flex">
+        <button class="btn btn-blue" onclick="exportCSV()" style="white-space:nowrap">📥 Export CSV</button>
+        <button class="btn btn-ghost" onclick="document.getElementById('csvImportFile').click()" style="white-space:nowrap;color:var(--neon);border-color:rgba(0,245,160,.3)">📤 Import CSV</button>
+        <input type="file" id="csvImportFile" accept=".csv" style="display:none" onchange="importCSV(this)">
+      </div>
     </div>
+  </div>
+
+  <!-- Import preview modal trigger area -->
+  <div id="importPreviewArea" style="display:none" class="card mt16" style="border-color:rgba(0,245,160,.25)">
   </div>
 
   <!-- JSONBin Sync card -->
@@ -997,6 +1005,21 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
 </div>
 
 </div><!-- /wrap -->
+<!-- IMPORT MODAL -->
+<div class="modal-backdrop" id="importModal" onclick="closeImportModal(event)">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-header">
+      <div class="modal-title" style="color:var(--neon)">📤 IMPORT CSV</div>
+      <button class="modal-close" onclick="closeImportModal()">&#10005;</button>
+    </div>
+    <div id="importPreviewContent"></div>
+    <div class="modal-actions" style="margin-top:20px">
+      <button class="btn" id="importConfirmBtn" onclick="confirmImport()">✅ Import &amp; Merge</button>
+      <button class="btn btn-ghost" onclick="closeImportModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
 <!-- EDIT MODAL -->
 <div class="modal-backdrop" id="editModal" onclick="closeModal(event)">
   <div class="modal">
@@ -2404,6 +2427,190 @@ function buildHistoryTables() {
 // ═══════════════════════════════════════════════════════════
 //  CSV EXPORT
 // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
+//  CSV IMPORT
+// ═══════════════════════════════════════════════════════════
+let importParsed = null; // holds the parsed data waiting for confirmation
+
+function importCSV(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      importParsed = parseVitalsCSV(e.target.result);
+      showImportPreview(importParsed);
+    } catch(err) {
+      showToast('❌ Could not parse CSV: ' + err.message);
+    }
+    input.value = ''; // reset so same file can be re-imported if needed
+  };
+  reader.readAsText(file);
+}
+
+function parseVitalsCSV(text) {
+  const lines = text.split('\n').map(l => l.trim()).filter(l => l !== '');
+  const result = { calories:[], checkins:[], daily:[], exercise:[] };
+  let section = null;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+
+    // Detect section headers
+    if (line === 'CALORIE LOG')        { section = 'cal'; continue; }
+    if (line === 'EXERCISE LOG')       { section = 'ex';  continue; }
+    if (line === 'SUNDAY CHECK-INS')   { section = 'ci';  continue; }
+    if (line === 'DAILY LOG')          { section = 'dl';  continue; }
+    if (line.startsWith('Date,'))      { continue; } // skip header rows
+    if (line.startsWith("JAY'S") || line === '') { continue; }
+
+    const cols = parseCSVLine(line);
+    if (!cols.length || !cols[0].match(/^\d{4}-\d{2}-\d{2}$/)) continue;
+
+    const date = cols[0];
+
+    if (section === 'cal') {
+      const breakfast = +cols[1]||0, lunch = +cols[2]||0, tea = +cols[3]||0, snacks = +cols[4]||0;
+      const total     = +cols[5] || (breakfast+lunch+tea+snacks);
+      const protein   = +cols[6]||0, fibre = +cols[7]||0;
+      result.calories.push({ date, breakfast, lunch, tea, snacks, total, protein, fibre });
+    } else if (section === 'ci') {
+      const kg      = +cols[1]||0;
+      const stomach = +cols[2]||0;
+      const bmi     = +cols[3]||+(kg/(HEIGHT_M*HEIGHT_M)).toFixed(1);
+      if (kg) result.checkins.push({ date, kg, stomach, bmi });
+    } else if (section === 'dl') {
+      const water  = +cols[1]||0;
+      const mood   = cols[2]||'';
+      const energy = +cols[3]||5;
+      const note   = cols[4]||'';
+      result.daily.push({ date, water, mood, energy, note });
+    } else if (section === 'ex') {
+      const totalBurnt = +cols[1]||0;
+      if (totalBurnt) result.exercise.push({ date, totalBurnt, activities:[] });
+    }
+  }
+
+  // Sort each array by date
+  ['calories','checkins','daily','exercise'].forEach(k => {
+    result[k].sort((a,b) => a.date.localeCompare(b.date));
+  });
+
+  return result;
+}
+
+// Handles quoted CSV fields properly (e.g. notes with commas)
+function parseCSVLine(line) {
+  const result = [];
+  let cur = '', inQuote = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') { inQuote = !inQuote; continue; }
+    if (c === ',' && !inQuote) { result.push(cur.trim()); cur = ''; continue; }
+    cur += c;
+  }
+  result.push(cur.trim());
+  return result;
+}
+
+function showImportPreview(parsed) {
+  const existing = ld();
+
+  // Count new vs existing per category
+  const countNew = (arr, existing) => {
+    const existingDates = new Set(existing.map(e => e.date));
+    return arr.filter(e => !existingDates.has(e.date)).length;
+  };
+  const countUpdate = (arr, existing) => {
+    const existingDates = new Set(existing.map(e => e.date));
+    return arr.filter(e => existingDates.has(e.date)).length;
+  };
+
+  const calNew  = countNew(parsed.calories, existing.calories);
+  const calUpd  = countUpdate(parsed.calories, existing.calories);
+  const ciNew   = countNew(parsed.checkins,  existing.checkins);
+  const ciUpd   = countUpdate(parsed.checkins, existing.checkins);
+  const dlNew   = countNew(parsed.daily,     existing.daily);
+  const dlUpd   = countUpdate(parsed.daily,  existing.daily);
+
+  const row = (icon, label, total, isNew, updated) =>
+    total === 0 ? '' : `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:14px">${icon} ${label}</span>
+      <div style="display:flex;gap:10px;font-family:'JetBrains Mono',monospace;font-size:11px">
+        ${isNew   > 0 ? `<span style="color:var(--neon)">+${isNew} new</span>`         : ''}
+        ${updated > 0 ? `<span style="color:var(--orange)">${updated} update</span>`   : ''}
+      </div>
+    </div>`;
+
+  document.getElementById('importPreviewContent').innerHTML = `
+    <div style="font-size:13px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:16px;line-height:1.7">
+      Previewing import — existing entries on the same date will be <strong style="color:var(--orange)">overwritten</strong>. New dates will be added.
+    </div>
+    <div style="background:rgba(255,255,255,.03);border-radius:12px;padding:4px 16px;margin-bottom:16px">
+      ${row('⚡','Calorie days',   parsed.calories.length, calNew, calUpd)}
+      ${row('⚖️','Check-ins',      parsed.checkins.length, ciNew,  ciUpd)}
+      ${row('💧','Daily logs',     parsed.daily.length,    dlNew,  dlUpd)}
+      ${parsed.exercise.length ? row('🏃','Exercise days', parsed.exercise.length, parsed.exercise.length, 0) : ''}
+      ${(parsed.calories.length + parsed.checkins.length + parsed.daily.length) === 0
+        ? '<div style="color:var(--red);padding:16px 0;font-size:13px">⚠️ No valid data found in this file. Make sure it\'s a Jay\'s VITALS CSV export.</div>' : ''}
+    </div>
+    <div style="font-size:11px;color:var(--muted);font-family:\'JetBrains Mono\',monospace">
+      Found <strong style="color:var(--text)">${parsed.calories.length}</strong> calorie days, 
+      <strong style="color:var(--text)">${parsed.checkins.length}</strong> check-ins, 
+      <strong style="color:var(--text)">${parsed.daily.length}</strong> daily logs.
+    </div>`;
+
+  const hasData = parsed.calories.length + parsed.checkins.length + parsed.daily.length > 0;
+  document.getElementById('importConfirmBtn').style.display = hasData ? 'block' : 'none';
+
+  document.getElementById('importModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function confirmImport() {
+  if (!importParsed) return;
+  const data = ld();
+
+  // Merge: CSV wins on date conflicts
+  const merge = (local, imported) => {
+    const map = {};
+    local.forEach(e    => { map[e.date] = e; });
+    imported.forEach(e => { map[e.date] = e; }); // imported overwrites
+    return Object.values(map).sort((a,b) => a.date.localeCompare(b.date));
+  };
+
+  data.calories = merge(data.calories, importParsed.calories);
+  data.checkins = merge(data.checkins, importParsed.checkins);
+  data.daily    = merge(data.daily,    importParsed.daily);
+  if (importParsed.exercise.length) {
+    data.exercise = merge(data.exercise, importParsed.exercise);
+  }
+
+  // Write to localStorage directly (bypass sd() to avoid triggering a cloud push mid-import)
+  localStorage.setItem('v_calories', JSON.stringify(data.calories));
+  localStorage.setItem('v_checkins', JSON.stringify(data.checkins));
+  localStorage.setItem('v_daily',    JSON.stringify(data.daily));
+  localStorage.setItem('v_exercise', JSON.stringify(data.exercise));
+
+  // Now push the merged result to cloud
+  pushToCloud(false);
+
+  // Refresh everything
+  refreshAll();
+  closeImportModal();
+  importParsed = null;
+
+  const total = data.calories.length + data.checkins.length + data.daily.length;
+  showToast(`✅ Import complete! ${total} records loaded.`);
+}
+
+function closeImportModal(e) {
+  if (e && e.target !== document.getElementById('importModal')) return;
+  document.getElementById('importModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
 function exportCSV() {
   const { calories, checkins, daily, exercise } = ld();
   let csv = 'JAY\'S VITALS EXPORT\n\n';
@@ -2691,7 +2898,12 @@ function closeModal(e) {
   document.body.style.overflow = '';
 }
 
-document.addEventListener('keydown', e => { if (e.key==='Escape') closeModal(); });
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape') {
+    closeModal();
+    closeImportModal();
+  }
+});
 </script>
 </body>
 </html>
