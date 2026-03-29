@@ -209,6 +209,23 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
 .macro-protein{background:rgba(0,217,245,.07);border:1px solid rgba(0,217,245,.2);color:var(--neon2)}
 .macro-fibre{background:rgba(255,140,66,.07);border:1px solid rgba(255,140,66,.2);color:var(--orange)}
 
+.ai-explanation{font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:14px;padding:10px 14px;background:rgba(255,255,255,.03);border-radius:8px;border-left:3px solid rgba(168,85,247,.4)}
+.ai-confidence-badge{font-size:9px;letter-spacing:1.5px;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:20px;white-space:nowrap;align-self:center;flex-shrink:0}
+.ai-confidence-high{background:rgba(0,245,160,.1);color:var(--neon);border:1px solid rgba(0,245,160,.25)}
+.ai-confidence-med{background:rgba(255,140,66,.1);color:var(--orange);border:1px solid rgba(255,140,66,.25)}
+.ai-confidence-low{background:rgba(255,61,90,.1);color:var(--red);border:1px solid rgba(255,61,90,.25)}
+.ai-breakdown-list{display:flex;flex-direction:column;gap:4px;margin-bottom:4px}
+.ai-breakdown-item{display:flex;justify-content:space-between;align-items:center;font-size:11px;font-family:'JetBrains Mono',monospace;padding:5px 10px;background:rgba(255,255,255,.03);border-radius:6px}
+.ai-breakdown-item .bi-name{color:var(--muted);flex:1}
+.ai-breakdown-item .bi-vals{display:flex;gap:10px}
+.ai-breakdown-item .bi-kcal{color:var(--neon);font-weight:700}
+.ai-breakdown-item .bi-pro{color:var(--neon2)}
+.ai-breakdown-item .bi-fib{color:var(--orange)}
+.ai-servings-row{display:flex;align-items:center;gap:12px;padding:12px 14px;background:rgba(168,85,247,.06);border:1px solid rgba(168,85,247,.2);border-radius:10px;margin-bottom:14px;flex-wrap:wrap}
+.ai-serving-btn{background:rgba(168,85,247,.15);border:1px solid rgba(168,85,247,.35);color:var(--purple);border-radius:8px;width:30px;height:30px;font-size:18px;cursor:pointer;line-height:1;transition:all .15s;display:flex;align-items:center;justify-content:center;font-weight:700}
+.ai-serving-btn:hover{background:rgba(168,85,247,.3)}
+.ai-macro-base{font-size:9px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:2px;letter-spacing:.5px}
+
 /* ── AI LOOKUP ── */
 .ai-card{border-color:rgba(168,85,247,.2);box-shadow:0 0 40px rgba(168,85,247,.05)}
 .ai-card::before{background:linear-gradient(90deg,transparent,rgba(168,85,247,.3),transparent)}
@@ -479,19 +496,59 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
     <div id="aiLoading" style="display:none;margin-top:16px">
       <div class="ai-thinking">
         <div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div>
-        <span style="font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-left:10px">Claude is thinking…</span>
+        <span style="font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-left:10px" id="aiLoadingMsg">Claude is working it out…</span>
       </div>
     </div>
+
     <!-- AI result confirmation card -->
     <div id="aiResult" style="display:none;margin-top:16px">
       <div class="ai-result-card">
-        <div class="ai-result-food" id="aiResultFood">—</div>
-        <div class="ai-result-note" id="aiResultNote"></div>
-        <div class="ai-result-macros">
-          <div class="ai-macro-box ai-macro-kcal"><div class="ai-macro-val" id="aiResultKcal">—</div><div class="ai-macro-lbl">kcal</div></div>
-          <div class="ai-macro-box ai-macro-pro"><div class="ai-macro-val" id="aiResultProtein">—</div><div class="ai-macro-lbl">g protein</div></div>
-          <div class="ai-macro-box ai-macro-fib"><div class="ai-macro-val" id="aiResultFibre">—</div><div class="ai-macro-lbl">g fibre</div></div>
+
+        <!-- Food name + confidence badge -->
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px;flex-wrap:wrap">
+          <div class="ai-result-food" id="aiResultFood">—</div>
+          <div id="aiConfidenceBadge" class="ai-confidence-badge"></div>
         </div>
+
+        <!-- Claude's explanation -->
+        <div id="aiResultExplanation" class="ai-explanation"></div>
+
+        <!-- Per-serving breakdown -->
+        <div id="aiBreakdownSection" style="display:none;margin-bottom:12px">
+          <div style="font-size:9px;letter-spacing:2px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:6px;text-transform:uppercase">Per Item / Ingredient</div>
+          <div id="aiBreakdownList" class="ai-breakdown-list"></div>
+        </div>
+
+        <!-- Servings control -->
+        <div class="ai-servings-row">
+          <span style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;letter-spacing:1px">SERVINGS / PORTIONS:</span>
+          <div style="display:flex;align-items:center;gap:8px">
+            <button class="ai-serving-btn" onclick="changeServings(-1)">−</button>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:var(--purple);min-width:20px;text-align:center" id="aiServingsNum">1</div>
+            <button class="ai-serving-btn" onclick="changeServings(1)">+</button>
+          </div>
+          <div style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace" id="aiServingsNote">= 1 serving</div>
+        </div>
+
+        <!-- Macro boxes — update live with servings -->
+        <div class="ai-result-macros">
+          <div class="ai-macro-box ai-macro-kcal">
+            <div class="ai-macro-val" id="aiResultKcal">—</div>
+            <div class="ai-macro-lbl">kcal</div>
+            <div class="ai-macro-base" id="aiBaseKcal"></div>
+          </div>
+          <div class="ai-macro-box ai-macro-pro">
+            <div class="ai-macro-val" id="aiResultProtein">—</div>
+            <div class="ai-macro-lbl">g protein</div>
+            <div class="ai-macro-base" id="aiBaseProtein"></div>
+          </div>
+          <div class="ai-macro-box ai-macro-fib">
+            <div class="ai-macro-val" id="aiResultFibre">—</div>
+            <div class="ai-macro-lbl">g fibre</div>
+            <div class="ai-macro-base" id="aiBaseFibre"></div>
+          </div>
+        </div>
+
         <div class="flex gap8 mt12 wrap-flex">
           <button class="btn" onclick="aiConfirm()" style="background:linear-gradient(135deg,var(--purple),#7c3aed);box-shadow:0 4px 16px rgba(168,85,247,0.3)">✅ Add to <span id="aiConfirmMeal">meal</span></button>
           <button class="btn btn-ghost" onclick="aiDismiss()">Dismiss</button>
@@ -499,7 +556,7 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
       </div>
     </div>
     <!-- AI error -->
-    <div id="aiError" style="display:none;margin-top:12px;padding:10px 14px;background:rgba(255,61,90,.08);border:1px solid rgba(255,61,90,.25);border-radius:10px;font-size:12px;color:var(--red);font-family:'JetBrains Mono',monospace" id="aiErrorMsg"></div>
+    <div id="aiError" style="display:none;margin-top:12px;padding:10px 14px;background:rgba(255,61,90,.08);border:1px solid rgba(255,61,90,.25);border-radius:10px;font-size:12px;color:var(--red);font-family:'JetBrains Mono',monospace"></div>
   </div>
 
   <!-- Stats -->
@@ -1646,7 +1703,8 @@ function refreshApiKeyStatus() {
   }
 }
 
-let aiPendingItem = null;
+let aiPendingItem = null;   // per-serving base values
+let aiServings    = 1;
 
 async function aiLookup() {
   const key = getApiKey();
@@ -1662,6 +1720,23 @@ async function aiLookup() {
   const btn = document.getElementById('aiLookupBtn');
   btn.disabled = true;
   btn.textContent = '⏳ Asking…';
+
+  // Cycle loading messages to show progress
+  const loadMsgs = [
+    'Identifying the food…',
+    'Estimating portion size…',
+    'Calculating nutrition…',
+    'Checking protein & fibre…',
+    'Almost done…',
+  ];
+  let msgIdx = 0;
+  const msgEl = document.getElementById('aiLoadingMsg');
+  msgEl.textContent = loadMsgs[0];
+  const msgTimer = setInterval(() => {
+    msgIdx = (msgIdx + 1) % loadMsgs.length;
+    msgEl.textContent = loadMsgs[msgIdx];
+  }, 900);
+
   document.getElementById('aiLoading').style.display = 'block';
   document.getElementById('aiResult').style.display  = 'none';
   document.getElementById('aiError').style.display   = 'none';
@@ -1677,22 +1752,39 @@ async function aiLookup() {
       },
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
-        max_tokens: 300,
-        system: `You are a nutrition expert. The user describes food they ate.
-Return ONLY valid JSON — no markdown, no explanation — in this exact shape:
-{"food":"short food name","kcal":number,"protein":number,"fibre":number,"note":"brief note e.g. estimate based on standard serving"}
-- kcal, protein, fibre must be integers (round to nearest whole number)
-- protein and fibre in grams
-- If quantities are unclear, assume a typical single serving
-- Never return anything outside the JSON object`,
+        max_tokens: 600,
+        system: `You are a friendly nutrition expert helping someone track their food. 
+The user describes what they ate. Return ONLY valid JSON with no markdown or explanation outside it.
+
+Use this exact shape:
+{
+  "food": "short display name",
+  "kcal": number,
+  "protein": number,
+  "fibre": number,
+  "servingNote": "what 1 serving means here e.g. '1 serving = 2 eggs + 2 slices toast'",
+  "explanation": "2-3 friendly sentences explaining how you worked it out — mention the portion assumed, key calorie sources, and any uncertainty",
+  "confidence": "high" | "medium" | "low",
+  "confidenceReason": "short reason e.g. 'standard recipe' or 'portion size unclear'",
+  "breakdown": [
+    { "item": "item name", "kcal": number, "protein": number, "fibre": number }
+  ]
+}
+
+Rules:
+- kcal, protein, fibre must be integers (round to nearest whole)
+- protein and fibre in grams per serving
+- breakdown should list each distinct food/ingredient separately (max 6 items)
+- If the user mentions a quantity (e.g. "2 eggs"), treat the WHOLE thing as 1 serving
+- confidence: high = named branded/standard food; medium = home cooked or estimated; low = very vague
+- explanation should be warm and plain English, not clinical`,
         messages: [{ role: 'user', content: input }]
       })
     });
 
     if (!resp.ok) {
       const errBody = await resp.json().catch(() => ({}));
-      const msg = errBody?.error?.message || `API error ${resp.status}`;
-      throw new Error(msg);
+      throw new Error(errBody?.error?.message || `API error ${resp.status}`);
     }
 
     const data   = await resp.json();
@@ -1700,20 +1792,64 @@ Return ONLY valid JSON — no markdown, no explanation — in this exact shape:
     const clean  = text.replace(/```[a-z]*\n?/g, '').replace(/```/g, '').trim();
     const result = JSON.parse(clean);
 
+    // Store per-serving base values
     aiPendingItem = {
       name:    result.food    || input,
       kcal:    Math.round(result.kcal    || 0),
       protein: Math.round(result.protein || 0),
       fibre:   Math.round(result.fibre   || 0),
     };
+    aiServings = 1;
 
+    // Populate result card
+    document.getElementById('aiResultFood').textContent = result.food || input;
+
+    // Explanation
+    const expEl = document.getElementById('aiResultExplanation');
+    expEl.textContent = result.explanation || result.servingNote || '';
+    expEl.style.display = result.explanation ? 'block' : 'none';
+
+    // Confidence badge
+    const badge = document.getElementById('aiConfidenceBadge');
+    const confMap = {
+      high:   { cls:'ai-confidence-high', txt:'✓ HIGH CONFIDENCE' },
+      medium: { cls:'ai-confidence-med',  txt:'~ ESTIMATED'       },
+      low:    { cls:'ai-confidence-low',  txt:'? LOW CONFIDENCE'  },
+    };
+    const conf = confMap[result.confidence] || confMap.medium;
+    badge.className = 'ai-confidence-badge ' + conf.cls;
+    badge.title     = result.confidenceReason || '';
+    badge.textContent = conf.txt;
+
+    // Breakdown
+    const breakEl    = document.getElementById('aiBreakdownSection');
+    const breakList  = document.getElementById('aiBreakdownList');
+    if (result.breakdown && result.breakdown.length > 1) {
+      breakList.innerHTML = result.breakdown.map(b => `
+        <div class="ai-breakdown-item">
+          <span class="bi-name">${b.item}</span>
+          <span class="bi-vals">
+            <span class="bi-kcal">${b.kcal} kcal</span>
+            ${b.protein > 0 ? `<span class="bi-pro">${b.protein}g pro</span>` : ''}
+            ${b.fibre   > 0 ? `<span class="bi-fib">${b.fibre}g fib</span>` : ''}
+          </span>
+        </div>`).join('');
+      breakEl.style.display = 'block';
+    } else {
+      breakEl.style.display = 'none';
+    }
+
+    // Serving note
+    document.getElementById('aiServingsNote').textContent =
+      result.servingNote ? '= ' + result.servingNote : '= 1 serving';
+
+    // Set confirm meal label
     const meal = document.getElementById('aiMealTarget').value;
-    document.getElementById('aiResultFood').textContent    = result.food || input;
-    document.getElementById('aiResultNote').textContent    = result.note || '';
-    document.getElementById('aiResultKcal').textContent    = aiPendingItem.kcal;
-    document.getElementById('aiResultProtein').textContent = aiPendingItem.protein;
-    document.getElementById('aiResultFibre').textContent   = aiPendingItem.fibre;
-    document.getElementById('aiConfirmMeal').textContent   = meal;
+    document.getElementById('aiConfirmMeal').textContent = meal;
+
+    // Render macros at servings=1
+    renderAiMacros();
+
     document.getElementById('aiResult').style.display = 'block';
 
   } catch (err) {
@@ -1721,26 +1857,58 @@ Return ONLY valid JSON — no markdown, no explanation — in this exact shape:
     errEl.textContent = '⚠️ ' + (err.message || 'Could not get nutrition data. Check your API key and connection.');
     errEl.style.display = 'block';
   } finally {
+    clearInterval(msgTimer);
     document.getElementById('aiLoading').style.display = 'none';
     btn.disabled    = false;
     btn.textContent = '🔍 Look Up';
   }
 }
 
+function renderAiMacros() {
+  if (!aiPendingItem) return;
+  const s    = aiServings;
+  const kcal = Math.round(aiPendingItem.kcal    * s);
+  const pro  = Math.round(aiPendingItem.protein  * s);
+  const fib  = Math.round(aiPendingItem.fibre    * s);
+
+  document.getElementById('aiResultKcal').textContent    = kcal;
+  document.getElementById('aiResultProtein').textContent = pro;
+  document.getElementById('aiResultFibre').textContent   = fib;
+  document.getElementById('aiServingsNum').textContent   = s;
+
+  // Show per-serving base if > 1 serving
+  const showBase = s > 1;
+  document.getElementById('aiBaseKcal').textContent    = showBase ? `${aiPendingItem.kcal} × ${s}` : '';
+  document.getElementById('aiBaseProtein').textContent = showBase ? `${aiPendingItem.protein} × ${s}` : '';
+  document.getElementById('aiBaseFibre').textContent   = showBase ? `${aiPendingItem.fibre} × ${s}` : '';
+}
+
+function changeServings(delta) {
+  aiServings = Math.max(1, Math.min(20, aiServings + delta));
+  renderAiMacros();
+}
+
 function aiConfirm() {
   if (!aiPendingItem) return;
-  const meal = document.getElementById('aiMealTarget').value;
-  addMealItem(meal, { ...aiPendingItem });
-  aiDismiss();
+  const meal  = document.getElementById('aiMealTarget').value;
+  const s     = aiServings;
+  const item  = {
+    name:    aiPendingItem.name + (s > 1 ? ` ×${s}` : ''),
+    kcal:    Math.round(aiPendingItem.kcal    * s),
+    protein: Math.round(aiPendingItem.protein  * s),
+    fibre:   Math.round(aiPendingItem.fibre    * s),
+  };
+  addMealItem(meal, item);
   document.getElementById('aiFoodInput').value = '';
-  showToast(`✅ Added ${aiPendingItem.name} to ${meal} (${aiPendingItem.kcal} kcal)`);
-  aiPendingItem = null;
+  showToast(`✅ Added ${item.name} — ${item.kcal} kcal`);
+  aiDismiss();
 }
 
 function aiDismiss() {
   document.getElementById('aiResult').style.display = 'none';
   document.getElementById('aiError').style.display  = 'none';
   aiPendingItem = null;
+  aiServings    = 1;
 }
 
 function updateCalStats() {
