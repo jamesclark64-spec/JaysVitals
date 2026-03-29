@@ -47,6 +47,8 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
 .sync-busy{background:rgba(0,217,245,.1);color:var(--neon2);border:1px solid rgba(0,217,245,.25);animation:syncPulse 1s ease infinite}
 .sync-err{background:rgba(255,61,90,.1);color:var(--red);border:1px solid rgba(255,61,90,.25)}
 @keyframes syncPulse{0%,100%{opacity:.6}50%{opacity:1}}
+.sync-input-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:600px){.sync-input-grid{grid-template-columns:1fr}}
 
 /* ── TABS ── */
 .tabs{display:flex;gap:2px;margin:28px 0 0;border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
@@ -955,21 +957,40 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
   <!-- JSONBin Sync card -->
   <div class="card mt16" style="border-color:rgba(0,217,245,.2)">
     <div class="card-title" style="color:var(--neon2)">☁️ CLOUD SYNC — JSONBIN</div>
-    <div style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.8">
-      Sync your data across devices using <strong style="color:var(--text)">JSONBin.io</strong> — it's free!<br>
-      <strong style="color:var(--neon2)">Step 1:</strong> Go to <strong>jsonbin.io</strong> → sign in → click <strong>API Keys</strong> → copy your <strong>Master Key</strong><br>
-      <strong style="color:var(--neon2)">Step 2:</strong> Paste it below and click <strong>Connect</strong> — a cloud bin will be created for you automatically.<br>
-      <strong style="color:var(--neon2)">Step 3:</strong> On any other device, repeat Steps 1–2 with the same key. Your data will appear instantly.
+    <div style="font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.9">
+      Sync your data across devices using <strong style="color:var(--text)">JSONBin.io</strong> — free!<br>
+      <strong style="color:var(--neon2)">First time setup:</strong> Go to <strong>jsonbin.io</strong> → sign in → <strong>API Keys</strong> → copy your <strong>Master Key</strong>. Paste it below and click <strong>Create Bin</strong>. A Bin ID will appear — copy that too.<br>
+      <strong style="color:var(--neon2)">On another device:</strong> Paste <em>both</em> the Master Key <em>and</em> the Bin ID, then click <strong>Connect</strong>.
     </div>
-    <div class="flex gap8 aic wrap-flex" style="margin-bottom:10px">
-      <div class="inp-wrap" style="flex:1;max-width:480px">
-        <input type="password" id="settingJbKey" placeholder="$2b$10$… (Master Key from jsonbin.io)" style="font-size:13px;font-weight:400;letter-spacing:.5px;padding-right:12px">
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px" class="sync-input-grid">
+      <div class="inp-group">
+        <div class="lbl">Master Key (from jsonbin.io → API Keys)</div>
+        <div class="inp-wrap"><input type="password" id="settingJbKey" placeholder="$2b$10$…" style="font-size:13px;font-weight:400;padding-right:12px"></div>
       </div>
-      <button class="btn" onclick="connectJsonBin()" style="background:linear-gradient(135deg,var(--neon2),var(--neon));color:#000;white-space:nowrap">Connect</button>
+      <div class="inp-group">
+        <div class="lbl">Bin ID — leave blank on first setup</div>
+        <div class="inp-wrap"><input type="text" id="settingJbBin" placeholder="Paste Bin ID from another device…" style="font-size:13px;font-weight:400;padding-right:12px"></div>
+      </div>
+    </div>
+
+    <div class="flex gap8 wrap-flex" style="margin-bottom:14px">
+      <button class="btn" onclick="connectJsonBin()" style="background:linear-gradient(135deg,var(--neon2),var(--neon));color:#000;white-space:nowrap" id="jbConnectBtn">Connect / Create Bin</button>
       <button class="btn btn-ghost" onclick="clearJsonBin()" style="white-space:nowrap">Disconnect</button>
     </div>
-    <div id="jbStatus" style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted);line-height:1.7">No cloud sync configured.</div>
-    <div class="flex gap8 wrap-flex mt12" id="jbActions" style="display:none!important">
+
+    <div id="jbStatus" style="font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--muted);line-height:1.9">No cloud sync configured.</div>
+
+    <!-- Bin ID copy box — shown after connection -->
+    <div id="jbBinIdBox" style="display:none;margin-top:14px;padding:12px 16px;background:rgba(0,217,245,.06);border:1px solid rgba(0,217,245,.2);border-radius:12px">
+      <div style="font-size:10px;letter-spacing:2px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:8px">YOUR BIN ID — COPY THIS TO OTHER DEVICES</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <code id="jbBinIdDisplay" style="font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--neon2);flex:1;word-break:break-all"></code>
+        <button class="btn" onclick="copyBinId()" style="padding:8px 14px;font-size:11px;white-space:nowrap">📋 Copy</button>
+      </div>
+    </div>
+
+    <div class="flex gap8 wrap-flex mt12" id="jbActions" style="display:none">
       <button class="btn" onclick="pushToCloud(true)" style="background:linear-gradient(135deg,var(--neon2),var(--neon));color:#000;font-size:12px;padding:10px 18px">⬆ Push to Cloud</button>
       <button class="btn btn-ghost" onclick="pullFromCloud(true)" style="font-size:12px;padding:10px 18px">⬇ Pull from Cloud</button>
     </div>
@@ -1128,69 +1149,63 @@ function setSyncBadge(state, msg) {
 }
 
 function updateJbStatus() {
-  const key   = getJbKey();
-  const binId = getJbBinId();
-  const el    = document.getElementById('jbStatus');
-  const acts  = document.getElementById('jbActions');
+  const key    = getJbKey();
+  const binId  = getJbBinId();
+  const el     = document.getElementById('jbStatus');
+  const acts   = document.getElementById('jbActions');
+  const binBox = document.getElementById('jbBinIdBox');
+  const binDisp= document.getElementById('jbBinIdDisplay');
+
   if (!key) {
-    el.textContent = 'No cloud sync configured.';
+    el.textContent = 'No cloud sync configured. Paste your Master Key above to get started.';
     el.style.color = 'var(--muted)';
     acts.style.display = 'none';
+    if (binBox) binBox.style.display = 'none';
     setSyncBadge('none', '☁ NOT SYNCED');
     return;
   }
   if (binId) {
-    el.innerHTML = `✅ Connected · Bin ID: <strong style="color:var(--neon2)">${binId}</strong><br>Data auto-syncs on every save and on page load.`;
+    el.innerHTML = `✅ Connected — auto-syncs on every save and on page load.`;
     el.style.color = 'var(--neon)';
     acts.style.removeProperty('display');
+    if (binBox)  binBox.style.display  = 'block';
+    if (binDisp) binDisp.textContent   = binId;
     setSyncBadge('ok', '☁ SYNCED');
   } else {
-    el.textContent = 'Key saved — click Connect to create your cloud bin.';
+    el.textContent = 'Master Key saved. Click "Connect / Create Bin" to finish setup.';
     el.style.color = 'var(--orange)';
     acts.style.display = 'none';
+    if (binBox) binBox.style.display = 'none';
     setSyncBadge('none', '☁ NOT SYNCED');
   }
   const keyInput = document.getElementById('settingJbKey');
-  if (keyInput && key) keyInput.value = key;
+  const binInput = document.getElementById('settingJbBin');
+  if (keyInput && key)   keyInput.value = key;
+  if (binInput && binId) binInput.value = binId;
 }
 
 async function connectJsonBin() {
-  const key = document.getElementById('settingJbKey').value.trim();
-  if (!key) { showToast('⚠️ Paste your JSONBin Master Key first'); return; }
+  const key        = document.getElementById('settingJbKey').value.trim();
+  const binIdInput = (document.getElementById('settingJbBin')?.value || '').trim();
+  if (!key) { showToast('⚠️ Paste your Master Key first'); return; }
 
   setSyncBadge('busy', '☁ CONNECTING…');
-  showToast('⏳ Connecting to JSONBin…');
 
   try {
-    // If we already have a bin ID for this key, just verify it works
-    const existingBin = getJbBinId();
-    if (getJbKey() === key && existingBin) {
-      const test = await fetch(`${JB_BASE}/b/${existingBin}/latest`, {
+    if (binIdInput) {
+      // ── Device 2+ : user provided a Bin ID — verify it then connect ──
+      const test = await fetch(`${JB_BASE}/b/${binIdInput}/latest`, {
         headers: { 'X-Master-Key': key }
       });
-      if (test.ok) {
-        localStorage.setItem('v_jb_key', key);
-        updateJbStatus();
-        await pullFromCloud(false);
-        showToast('✅ Already connected — data pulled!');
-        return;
-      }
-    }
-
-    // Check if a bin already exists with name "jays-vitals"
-    const listResp = await fetch(`${JB_BASE}/b`, {
-      headers: { 'X-Master-Key': key }
-    });
-
-    let binId = null;
-    if (listResp.ok) {
-      const list = await listResp.json();
-      const existing = (list || []).find(b => b.record?.name === 'jays-vitals');
-      if (existing) binId = existing.record?.id;
-    }
-
-    // No existing bin — create one with current local data
-    if (!binId) {
+      if (!test.ok) throw new Error(`Bin not found or key mismatch (${test.status}). Double-check both values.`);
+      localStorage.setItem('v_jb_key', key);
+      localStorage.setItem('v_jb_bin', binIdInput);
+      updateJbStatus();
+      await pullFromCloud(false);
+      refreshAll();
+      showToast('✅ Connected! Cloud data pulled to this device.');
+    } else {
+      // ── Device 1 : no Bin ID yet — create a new bin ──
       const payload = ld();
       const createResp = await fetch(`${JB_BASE}/b`, {
         method: 'POST',
@@ -1202,28 +1217,28 @@ async function connectJsonBin() {
         },
         body: JSON.stringify(payload)
       });
-      if (!createResp.ok) throw new Error('Could not create bin: ' + createResp.status);
-      const created = await createResp.json();
-      binId = created.metadata?.id;
-      if (!binId) throw new Error('No bin ID returned');
-      showToast('✅ Cloud bin created and data uploaded!');
-    } else {
-      showToast('✅ Existing bin found — pulling your data…');
+      if (!createResp.ok) throw new Error('Could not create bin (' + createResp.status + '). Check your Master Key.');
+      const created  = await createResp.json();
+      const newBinId = created.metadata?.id;
+      if (!newBinId) throw new Error('JSONBin did not return a Bin ID — please try again.');
+      localStorage.setItem('v_jb_key', key);
+      localStorage.setItem('v_jb_bin', newBinId);
+      updateJbStatus();
+      showToast('✅ Bin created! Copy the Bin ID shown below to your other devices.');
     }
-
-    localStorage.setItem('v_jb_key', key);
-    localStorage.setItem('v_jb_bin', binId);
-    updateJbStatus();
-
-    // Pull data from cloud (it may have more recent data from another device)
-    await pullFromCloud(false);
-    refreshAll();
-
   } catch (err) {
     setSyncBadge('err', '☁ ERROR');
-    showToast('❌ ' + (err.message || 'Could not connect to JSONBin'));
+    showToast('❌ ' + (err.message || 'Could not connect'));
     console.error(err);
   }
+}
+
+function copyBinId() {
+  const id = getJbBinId();
+  if (!id) return;
+  navigator.clipboard.writeText(id)
+    .then(() => showToast('📋 Bin ID copied to clipboard!'))
+    .catch(() => prompt('Copy this Bin ID and paste it on your other device:', id));
 }
 
 async function pushToCloud(showFeedback = false) {
