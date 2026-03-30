@@ -279,6 +279,22 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
 .meal-item-del{background:none;border:none;color:rgba(255,255,255,.2);cursor:pointer;font-size:13px;padding:0 2px;line-height:1;transition:color .15s;flex-shrink:0}
 .meal-item-del:hover{color:var(--red)}
 
+/* ── ALCOHOL GRID ── */
+.alc-month-row{display:flex;align-items:center;gap:8px;min-width:0}
+.alc-month-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;width:32px;flex-shrink:0;text-align:right}
+.alc-days{display:flex;gap:3px;flex-wrap:nowrap}
+.alc-day{width:20px;height:20px;border-radius:4px;cursor:pointer;transition:transform .1s,box-shadow .15s;flex-shrink:0;position:relative}
+.alc-day:hover{transform:scale(1.25);z-index:10}
+.alc-day.sober{background:#22c55e;box-shadow:0 0 0 0 rgba(34,197,94,0)}
+.alc-day.sober:hover{box-shadow:0 0 8px rgba(34,197,94,.6)}
+.alc-day.drink{background:var(--red);box-shadow:0 0 6px rgba(255,61,90,.4)}
+.alc-day.drink:hover{box-shadow:0 0 12px rgba(255,61,90,.7)}
+.alc-day.future{background:rgba(255,255,255,.06);cursor:default}
+.alc-day.future:hover{transform:none}
+.alc-day.today{outline:2px solid #fff;outline-offset:1px}
+.alc-day-tip{display:none;position:absolute;bottom:26px;left:50%;transform:translateX(-50%);background:rgba(13,17,23,.97);border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:10px;white-space:nowrap;font-family:'JetBrains Mono',monospace;color:var(--text);z-index:100;pointer-events:none}
+.alc-day:hover .alc-day-tip{display:block}
+
 /* ── EXERCISE ── */
 .ex-cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;margin-bottom:24px}
 .ex-card{background:rgba(255,140,66,0.04);border:1px solid rgba(255,140,66,0.18);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px;transition:border-color .2s,box-shadow .2s;position:relative;overflow:hidden}
@@ -362,6 +378,7 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
 <div class="tabs">
   <button class="tab-btn active"  onclick="tab('calories')">⚡ Calories</button>
   <button class="tab-btn"         onclick="tab('exercise')">🏃 Exercise</button>
+  <button class="tab-btn"         onclick="tab('alcohol')">🍺 Alcohol</button>
   <button class="tab-btn"         onclick="tab('daily')">💧 Daily Log</button>
   <button class="tab-btn"         onclick="tab('checkin')">⚖️ Sunday Check-in</button>
   <button class="tab-btn"         onclick="tab('charts')">📈 Analytics</button>
@@ -734,6 +751,61 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
       <button class="ex-add-btn" onclick="addActivity('custom')">+ Add</button>
     </div>
 
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     ALCOHOL PANEL
+═══════════════════════════════════════════════════ -->
+<div class="panel" id="panel-alcohol">
+  <div class="glow-bar" style="background:linear-gradient(90deg,#22c55e,#16a34a,transparent)"></div>
+
+  <!-- Stats row -->
+  <div class="g4 mb" id="alcoholStats">
+    <div class="stat-box">
+      <div class="lbl">Sober Days</div>
+      <div class="val" style="color:#22c55e" id="alcoholSoberCount">—</div>
+      <span class="unit">this year</span>
+    </div>
+    <div class="stat-box">
+      <div class="lbl">Drink Days</div>
+      <div class="val" style="color:var(--red)" id="alcoholDrinkCount">—</div>
+      <span class="unit">this year</span>
+    </div>
+    <div class="stat-box">
+      <div class="lbl">Current Streak</div>
+      <div class="val" style="color:#22c55e" id="alcoholStreak">—</div>
+      <span class="unit">sober days</span>
+    </div>
+    <div class="stat-box">
+      <div class="lbl">Best Streak</div>
+      <div class="val" style="color:#22c55e" id="alcoholBestStreak">—</div>
+      <span class="unit">sober days</span>
+    </div>
+  </div>
+
+  <!-- Year grid card -->
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px">
+      <div>
+        <div class="card-title" style="color:#22c55e;margin-bottom:4px">🗓 <span id="alcoholYearLabel">2026</span> AT A GLANCE</div>
+        <div style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;line-height:1.6">
+          🟢 = sober (default) &nbsp;|&nbsp; 🔴 = had a drink &nbsp;|&nbsp; Click any day to toggle
+        </div>
+      </div>
+      <div class="flex gap8 wrap-flex">
+        <button class="btn" onclick="toggleAlcoholToday()" style="background:linear-gradient(135deg,var(--red),#c2185b);box-shadow:0 4px 16px rgba(255,61,90,.3);font-size:12px;padding:10px 18px" id="alcoholTodayBtn">🍺 Toggle Today</button>
+      </div>
+    </div>
+
+    <!-- Month grid -->
+    <div id="alcoholGrid" style="display:flex;flex-direction:column;gap:10px;overflow-x:auto;padding-bottom:4px">
+      <!-- Rendered by JS -->
+    </div>
+
+    <div style="margin-top:16px;padding:12px 16px;background:rgba(255,255,255,.02);border-radius:10px;font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;line-height:1.7">
+      💡 Days that haven't happened yet are shown as grey. All past days default to <span style="color:#22c55e;font-weight:700">green (sober)</span> unless you mark them as a drink day.
+    </div>
   </div>
 </div>
 
@@ -1193,6 +1265,7 @@ function ld() {
     checkins : JSON.parse(localStorage.getItem('v_checkins')  || '[]'),
     daily    : JSON.parse(localStorage.getItem('v_daily')     || '[]'),
     exercise : JSON.parse(localStorage.getItem('v_exercise')  || '[]'),
+    alcohol  : JSON.parse(localStorage.getItem('v_alcohol')   || '[]'),
     goals    : JSON.parse(localStorage.getItem('v_goals')     || '{"cal":2500,"weight":null,"water":8}'),
   };
 }
@@ -1202,6 +1275,7 @@ function sd(data) {
   localStorage.setItem('v_checkins', JSON.stringify(data.checkins));
   localStorage.setItem('v_daily',    JSON.stringify(data.daily));
   localStorage.setItem('v_exercise', JSON.stringify(data.exercise));
+  localStorage.setItem('v_alcohol',  JSON.stringify(data.alcohol));
   localStorage.setItem('v_goals',    JSON.stringify(data.goals));
   // Auto-push to cloud after every save (non-blocking)
   pushToCloud(false);
@@ -1366,11 +1440,17 @@ async function pullFromCloud(showFeedback = false) {
     };
 
     const local = ld();
+    // alcohol is a simple array of date strings — union both sets, cloud wins
+    const mergeAlcohol = (local, cloud) => {
+      const s = new Set([...(local||[]), ...(cloud||[])]);
+      return [...s].sort();
+    };
     const merged = {
       calories: merge(local.calories, remote.calories),
       checkins: merge(local.checkins, remote.checkins),
       daily:    merge(local.daily,    remote.daily),
       exercise: merge(local.exercise, remote.exercise),
+      alcohol:  mergeAlcohol(local.alcohol, remote.alcohol),
       goals:    remote.goals || local.goals,
     };
 
@@ -1379,6 +1459,7 @@ async function pullFromCloud(showFeedback = false) {
     localStorage.setItem('v_checkins', JSON.stringify(merged.checkins));
     localStorage.setItem('v_daily',    JSON.stringify(merged.daily));
     localStorage.setItem('v_exercise', JSON.stringify(merged.exercise));
+    localStorage.setItem('v_alcohol',  JSON.stringify(merged.alcohol));
     localStorage.setItem('v_goals',    JSON.stringify(merged.goals));
 
     const now = new Date().toLocaleTimeString('en-GB', {hour:'2-digit', minute:'2-digit'});
@@ -1443,6 +1524,11 @@ window.addEventListener('DOMContentLoaded', async () => {
   // Pull from cloud first if configured (silently merges into localStorage)
   updateJbStatus();
   await pullFromCloud(false);
+
+  // Seed March 13th as a drink day if no alcohol data exists yet
+  if (!localStorage.getItem('v_alcohol')) {
+    localStorage.setItem('v_alcohol', JSON.stringify(['2026-03-13']));
+  }
 
   // Then build the UI from (now up-to-date) localStorage
   loadSettings();
@@ -2845,7 +2931,7 @@ function exportCSV() {
 // ═══════════════════════════════════════════════════════════
 //  UI HELPERS
 // ═══════════════════════════════════════════════════════════
-const TABS = ['calories','exercise','daily','checkin','charts','history','settings'];
+const TABS = ['calories','exercise','alcohol','daily','checkin','charts','history','settings'];
 
 function tab(name) {
   document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', TABS[i] === name));
@@ -2856,6 +2942,7 @@ function tab(name) {
   if (name === 'settings') { initSettingsInputs(); refreshApiKeyStatus(); updateJbStatus(); }
   if (name === 'checkin')  { updateCheckinStats(); buildGoalWeightCard(); buildHomeGoalBar(); }
   if (name === 'exercise') { loadTodayExercise(); renderExLogged(); }
+  if (name === 'alcohol')  buildAlcoholGrid();
 }
 
 function showToast(msg) {
@@ -2991,9 +3078,169 @@ function clearExercise() {
   calcCal();
 }
 
+// ═══════════════════════════════════════════════════════════
+//  ALCOHOL TRACKER
+// ═══════════════════════════════════════════════════════════
+function getAlcoholDates() {
+  // Returns a Set of date strings where alcohol was consumed
+  return new Set(JSON.parse(localStorage.getItem('v_alcohol') || '[]'));
+}
+
+function saveAlcohol(dateSet) {
+  const arr = [...dateSet].sort();
+  localStorage.setItem('v_alcohol', JSON.stringify(arr));
+  // Sync to cloud via full data push
+  const data = ld();
+  data.alcohol = arr;
+  // Write all back then push
+  localStorage.setItem('v_alcohol', JSON.stringify(arr));
+  pushToCloud(false);
+}
+
+function buildAlcoholGrid() {
+  const year     = new Date().getFullYear();
+  const today    = todayStr();
+  const drinkDays = getAlcoholDates();
+
+  document.getElementById('alcoholYearLabel').textContent = year;
+
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const grid = document.getElementById('alcoholGrid');
+  grid.innerHTML = '';
+
+  // Day number labels row
+  const labelRow = document.createElement('div');
+  labelRow.className = 'alc-month-row';
+  labelRow.innerHTML = `<div class="alc-month-lbl"></div><div class="alc-days" style="gap:3px">
+    ${Array.from({length:31},(_,i)=>`<div style="width:20px;height:12px;font-size:8px;color:var(--muted);font-family:'JetBrains Mono',monospace;text-align:center;flex-shrink:0">${(i+1)%5===0||i===0?i+1:''}</div>`).join('')}
+  </div>`;
+  grid.appendChild(labelRow);
+
+  for (let m = 0; m < 12; m++) {
+    const daysInMonth = new Date(year, m + 1, 0).getDate();
+    const row = document.createElement('div');
+    row.className = 'alc-month-row';
+
+    const lbl = document.createElement('div');
+    lbl.className = 'alc-month-lbl';
+    lbl.textContent = MONTHS[m];
+    row.appendChild(lbl);
+
+    const daysWrap = document.createElement('div');
+    daysWrap.className = 'alc-days';
+
+    for (let d = 1; d <= 31; d++) {
+      const cell = document.createElement('div');
+      cell.className = 'alc-day';
+
+      if (d > daysInMonth) {
+        // Pad with invisible spacer to keep columns aligned
+        cell.style.visibility = 'hidden';
+        cell.style.cursor = 'default';
+      } else {
+        const mm   = String(m + 1).padStart(2, '0');
+        const dd   = String(d).padStart(2, '0');
+        const date = `${year}-${mm}-${dd}`;
+        const isFuture = date > today;
+        const isDrink  = drinkDays.has(date);
+        const isToday  = date === today;
+
+        if (isFuture) {
+          cell.classList.add('future');
+        } else if (isDrink) {
+          cell.classList.add('drink');
+        } else {
+          cell.classList.add('sober');
+        }
+
+        if (isToday) cell.classList.add('today');
+
+        // Tooltip
+        const tip = document.createElement('div');
+        tip.className = 'alc-day-tip';
+        const dateLabel = new Date(date + 'T12:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+        tip.textContent = dateLabel + (isFuture ? ' — future' : isDrink ? ' — 🍺 drink' : ' — ✅ sober');
+        cell.appendChild(tip);
+
+        if (!isFuture) {
+          cell.onclick = () => toggleAlcoholDate(date);
+        }
+      }
+      daysWrap.appendChild(cell);
+    }
+
+    row.appendChild(daysWrap);
+    grid.appendChild(row);
+  }
+
+  updateAlcoholStats(drinkDays, year, today);
+  updateAlcoholTodayBtn(drinkDays, today);
+}
+
+function toggleAlcoholDate(date) {
+  const drinks = getAlcoholDates();
+  if (drinks.has(date)) drinks.delete(date);
+  else drinks.add(date);
+  saveAlcohol(drinks);
+  buildAlcoholGrid(); // re-render
+}
+
+function toggleAlcoholToday() {
+  toggleAlcoholDate(todayStr());
+}
+
+function updateAlcoholTodayBtn(drinkDates, today) {
+  const btn = document.getElementById('alcoholTodayBtn');
+  if (!btn) return;
+  const isDrink = drinkDates.has(today);
+  btn.textContent = isDrink ? '✅ Mark Today Sober' : '🍺 Mark Today as Drink';
+  btn.style.background = isDrink
+    ? 'linear-gradient(135deg,#22c55e,#16a34a)'
+    : 'linear-gradient(135deg,var(--red),#c2185b)';
+  btn.style.boxShadow = isDrink
+    ? '0 4px 16px rgba(34,197,94,.3)'
+    : '0 4px 16px rgba(255,61,90,.3)';
+}
+
+function updateAlcoholStats(drinkDates, year, today) {
+  // Count all days up to today in the year
+  const yearStart  = `${year}-01-01`;
+  const daysPassed = Math.floor((new Date(today+'T12:00') - new Date(yearStart+'T12:00')) / 86400000) + 1;
+  const drinkCount = [...drinkDates].filter(d => d.startsWith(year+'')).length;
+  const soberCount = daysPassed - drinkCount;
+
+  document.getElementById('alcoholDrinkCount').textContent = drinkCount;
+  document.getElementById('alcoholSoberCount').textContent = soberCount;
+
+  // Current sober streak (counting backwards from today)
+  let streak = 0;
+  let check  = new Date(today + 'T12:00');
+  while (true) {
+    const s = check.toISOString().slice(0,10);
+    if (s < yearStart) break; // don't go before year start
+    if (drinkDates.has(s)) break;
+    streak++;
+    check.setDate(check.getDate() - 1);
+  }
+  document.getElementById('alcoholStreak').textContent = streak;
+
+  // Best sober streak this year
+  let best = 0, run = 0;
+  const d = new Date(yearStart + 'T12:00');
+  const todayDate = new Date(today + 'T12:00');
+  while (d <= todayDate) {
+    const s = d.toISOString().slice(0,10);
+    if (drinkDates.has(s)) { best = Math.max(best, run); run = 0; }
+    else run++;
+    d.setDate(d.getDate() + 1);
+  }
+  best = Math.max(best, run);
+  document.getElementById('alcoholBestStreak').textContent = best;
+}
+
 function clearAllData() {
   if (!confirm('Delete ALL of Jay\'s data? This cannot be undone!')) return;
-  ['v_calories','v_checkins','v_daily','v_exercise','v_goals'].forEach(k => localStorage.removeItem(k));
+  ['v_calories','v_checkins','v_daily','v_exercise','v_alcohol','v_goals'].forEach(k => localStorage.removeItem(k));
   location.reload();
 }
 
