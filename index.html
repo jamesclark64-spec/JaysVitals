@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Jay's VITALS — Health Tracker</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root {
@@ -21,21 +21,64 @@
   --text: #e8edf2;
   --muted: #4a5a6a;
   --card-glow: 0 0 40px rgba(0,245,160,0.05);
+  --grid-color: rgba(0,245,160,0.025);
+  --blob-color: rgba(0,245,160,0.05);
+  --logo-glow: rgba(0,245,160,0.35);
+}
+
+/* ── THEME: BLOSSOM (feminine / warm rose) ── */
+[data-theme="blossom"] {
+  --bg: #1a0a14;
+  --surface: rgba(255,255,255,0.05);
+  --surface2: rgba(255,255,255,0.09);
+  --border: rgba(255,182,193,0.12);
+  --neon: #ff85b3;
+  --neon2: #ffb3d1;
+  --purple: #e879b0;
+  --red: #ff4d6d;
+  --orange: #ffb347;
+  --blue: #c084fc;
+  --text: #fce8f0;
+  --muted: #9c6b7e;
+  --card-glow: 0 0 40px rgba(255,133,179,0.07);
+  --grid-color: rgba(255,133,179,0.03);
+  --blob-color: rgba(255,133,179,0.06);
+  --logo-glow: rgba(255,133,179,0.4);
+}
+
+/* ── THEME: MIDNIGHT (deep navy / gold luxury) ── */
+[data-theme="midnight"] {
+  --bg: #07090f;
+  --surface: rgba(255,215,0,0.04);
+  --surface2: rgba(255,215,0,0.07);
+  --border: rgba(255,215,0,0.1);
+  --neon: #ffd700;
+  --neon2: #f0a500;
+  --purple: #c084fc;
+  --red: #ff4d4d;
+  --orange: #ff8c00;
+  --blue: #60a5fa;
+  --text: #f0e6cc;
+  --muted: #5a5040;
+  --card-glow: 0 0 40px rgba(255,215,0,0.05);
+  --grid-color: rgba(255,215,0,0.025);
+  --blob-color: rgba(255,215,0,0.05);
+  --logo-glow: rgba(255,215,0,0.4);
 }
 
 *{box-sizing:border-box;margin:0;padding:0}
 
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden}
 
-body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,245,160,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,160,0.025) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0}
-body::after{content:'';position:fixed;top:-40%;left:-10%;width:55%;height:55%;background:radial-gradient(ellipse,rgba(0,245,160,0.05) 0%,transparent 70%);pointer-events:none;z-index:0;animation:bgpulse 10s ease-in-out infinite alternate}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--grid-color) 1px,transparent 1px),linear-gradient(90deg,var(--grid-color) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;top:-40%;left:-10%;width:55%;height:55%;background:radial-gradient(ellipse,var(--blob-color) 0%,transparent 70%);pointer-events:none;z-index:0;animation:bgpulse 10s ease-in-out infinite alternate}
 @keyframes bgpulse{0%{opacity:.5;transform:scale(1)}100%{opacity:1;transform:scale(1.08)}}
 
 .wrap{max-width:1200px;margin:0 auto;padding:0 24px;position:relative;z-index:1}
 
 /* ── HEADER ── */
 header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:12px}
-.logo{font-family:'Bebas Neue',sans-serif;font-size:54px;letter-spacing:5px;line-height:1;background:linear-gradient(135deg,var(--neon),var(--neon2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 18px rgba(0,245,160,0.35))}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:54px;letter-spacing:5px;line-height:1;background:linear-gradient(135deg,var(--neon),var(--neon2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 18px var(--logo-glow))}
 .logo em{font-style:normal;font-size:28px;letter-spacing:4px;margin-right:6px;vertical-align:middle;-webkit-text-fill-color:rgba(255,255,255,0.88);background:none;text-shadow:0 0 20px rgba(255,255,255,0.15)}
 .logo span{font-size:13px;letter-spacing:3px;display:block;font-family:'JetBrains Mono',monospace;background:linear-gradient(135deg,var(--neon),var(--neon2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:none;opacity:.6}
 .date-box{text-align:right;font-family:'JetBrains Mono',monospace}
@@ -279,6 +322,18 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
 .meal-item-del{background:none;border:none;color:rgba(255,255,255,.2);cursor:pointer;font-size:13px;padding:0 2px;line-height:1;transition:color .15s;flex-shrink:0}
 .meal-item-del:hover{color:var(--red)}
 
+/* ── THEME PICKER ── */
+.theme-cards{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+.theme-card{position:relative;width:100px;border-radius:12px;padding:12px 10px;cursor:pointer;border:2px solid transparent;transition:all .2s;text-align:center}
+.theme-card:hover{transform:translateY(-2px)}
+.theme-card.active{border-color:var(--neon);box-shadow:0 0 16px rgba(0,0,0,.4)}
+.theme-card .tc-swatch{display:flex;gap:4px;justify-content:center;margin-bottom:8px}
+.theme-card .tc-dot{width:16px;height:16px;border-radius:50%}
+.theme-card .tc-name{font-size:11px;font-family:'JetBrains Mono',monospace;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.theme-card.active .tc-name{color:var(--text)}
+.theme-tick{position:absolute;top:6px;right:6px;font-size:12px;display:none}
+.theme-card.active .theme-tick{display:block}
+
 /* ── ALCOHOL GRID ── */
 .alc-month-row{display:flex;align-items:center;gap:8px;min-width:0}
 .alc-month-lbl{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--muted);text-transform:uppercase;width:32px;flex-shrink:0;text-align:right}
@@ -357,6 +412,153 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
 .modal-mood{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
 .modal-mood-btn{background:rgba(255,255,255,.04);border:2px solid var(--border);border-radius:10px;padding:8px 12px;cursor:pointer;font-size:18px;transition:all .2s}
 .modal-mood-btn.sel{border-color:var(--neon);background:rgba(0,245,160,.1);transform:scale(1.1)}
+
+/* ── MEAL LIBRARY (scoped to #panel-meals) ── */
+#panel-meals{font-family:'DM Sans',sans-serif}
+#panel-meals .ml-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px}
+#panel-meals .ml-logo{font-family:'Playfair Display',Georgia,serif;font-size:20px;font-weight:600;cursor:pointer;color:var(--text)}
+#panel-meals .ml-logo em{color:#d4933a;font-style:normal}
+#panel-meals .ml-btn{display:inline-flex;align-items:center;gap:6px;padding:8px 15px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .18s;white-space:nowrap;line-height:1}
+#panel-meals .ml-btn-p{background:#d4933a;color:#1a1208}
+#panel-meals .ml-btn-p:hover{background:#e8b56a}
+#panel-meals .ml-btn-g{background:rgba(255,255,255,.05);color:var(--muted);border:1px solid var(--border)}
+#panel-meals .ml-btn-g:hover{color:var(--text);background:rgba(255,255,255,.09)}
+#panel-meals .ml-btn-d{background:rgba(190,70,60,.12);color:#e07060;border:1px solid rgba(190,70,60,.2)}
+#panel-meals .ml-btn-sm{padding:5px 11px;font-size:12px}
+#panel-meals .ml-search-row{display:flex;gap:10px;margin-bottom:12px}
+#panel-meals .ml-sw{flex:1;position:relative}
+#panel-meals .ml-si{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+#panel-meals input.ml-search{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 12px 8px 32px;outline:none;transition:border-color .18s}
+#panel-meals input.ml-search:focus{border-color:#d4933a}
+#panel-meals input.ml-search::placeholder{color:var(--muted)}
+#panel-meals select.ml-sort{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:8px;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 12px;outline:none;cursor:pointer}
+#panel-meals .ml-filters{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+#panel-meals .ml-chip{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);color:var(--muted);background:transparent;transition:all .14s;font-family:'DM Sans',sans-serif}
+#panel-meals .ml-chip.on{background:rgba(212,147,58,.14);border-color:#d4933a;color:#d4933a}
+#panel-meals .ml-count{font-size:12px;color:var(--muted);margin-bottom:12px}
+#panel-meals .ml-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:13px}
+@media(max-width:600px){#panel-meals .ml-grid{grid-template-columns:1fr}}
+#panel-meals .ml-card{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:13px;padding:15px 17px;cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+#panel-meals .ml-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#d4933a,transparent);opacity:0;transition:opacity .2s}
+#panel-meals .ml-card:hover{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.15);transform:translateY(-2px)}
+#panel-meals .ml-card:hover::before{opacity:1}
+#panel-meals .ml-card-head{display:flex;align-items:flex-start;gap:11px;margin-bottom:9px}
+#panel-meals .ml-card-emj{font-size:24px;width:42px;height:42px;background:rgba(255,255,255,.05);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border)}
+#panel-meals .ml-card-tw{flex:1;min-width:0}
+#panel-meals .ml-card-title{font-family:'Playfair Display',Georgia,serif;font-size:14.5px;font-weight:600;line-height:1.25;margin-bottom:2px;color:var(--text)}
+#panel-meals .ml-card-desc{font-size:12px;color:var(--muted);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+#panel-meals .ml-cal-badge{font-size:12px;font-weight:600;padding:4px 8px;border-radius:6px;white-space:nowrap;flex-shrink:0;text-align:center;line-height:1.3}
+#panel-meals .ml-cal-badge span{display:block;font-size:9px;font-weight:400;opacity:.7;text-transform:uppercase;letter-spacing:.4px;margin-top:1px}
+#panel-meals .ml-cal-lo{background:rgba(107,158,114,.13);color:#6b9e72}
+#panel-meals .ml-cal-mid{background:rgba(212,147,58,.14);color:#d4933a}
+#panel-meals .ml-cal-hi{background:rgba(190,70,60,.14);color:#e07060}
+#panel-meals .ml-card-meta{display:flex;align-items:center;gap:12px;font-size:11px;color:var(--muted);margin-bottom:7px}
+#panel-meals .ml-tags{display:flex;flex-wrap:wrap;gap:4px}
+#panel-meals .ml-tag{font-size:10px;font-weight:500;padding:2px 7px;border-radius:4px;background:rgba(107,158,114,.13);color:#6b9e72}
+#panel-meals .ml-tag-s{background:rgba(90,120,165,.15);color:#7090c0}
+#panel-meals .ml-dinner-btn{width:100%;padding:15px 18px;border-radius:12px;border:2px dashed rgba(212,147,58,.35);background:linear-gradient(135deg,rgba(212,147,58,.08),rgba(212,147,58,.04));color:#d4933a;font-family:'Playfair Display',Georgia,serif;font-size:17px;font-weight:600;cursor:pointer;transition:all .22s;margin-bottom:16px;text-align:center}
+#panel-meals .ml-dinner-btn:hover{background:linear-gradient(135deg,rgba(212,147,58,.16),rgba(212,147,58,.08));border-color:#d4933a;transform:translateY(-2px)}
+#panel-meals .ml-dinner-btn .sub{display:block;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:400;color:var(--muted);margin-top:3px}
+#panel-meals .ml-dh{display:flex;align-items:flex-start;gap:15px;margin-bottom:16px;flex-wrap:wrap}
+#panel-meals .ml-d-emj{font-size:40px;width:64px;height:64px;background:rgba(255,255,255,.05);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid var(--border)}
+#panel-meals .ml-d-ta{flex:1;min-width:200px}
+#panel-meals .ml-d-title{font-family:'Playfair Display',Georgia,serif;font-size:22px;font-weight:700;line-height:1.2;margin-bottom:5px;color:var(--text)}
+#panel-meals .ml-d-desc{color:var(--muted);font-size:13px;line-height:1.6;margin-bottom:7px}
+#panel-meals .ml-d-meta{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--muted);margin-bottom:7px}
+#panel-meals .ml-d-meta strong{color:var(--text)}
+#panel-meals .ml-d-acts{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px}
+#panel-meals .ml-add-tracker{background:rgba(0,245,160,.06);border:1px solid rgba(0,245,160,.2);border-radius:12px;padding:13px 15px;margin-bottom:18px}
+#panel-meals .ml-add-tracker-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--neon);font-family:'JetBrains Mono',monospace;margin-bottom:8px}
+#panel-meals .ml-add-tracker-stats{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+#panel-meals .ml-at-stat{font-size:11px;font-family:'JetBrains Mono',monospace;padding:3px 9px;border-radius:20px;background:rgba(255,255,255,.05);color:var(--muted)}
+#panel-meals .ml-add-btns{display:flex;gap:7px;flex-wrap:wrap}
+#panel-meals .ml-add-btn{background:linear-gradient(135deg,var(--neon),var(--neon2));color:#000;border:none;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:.5px;padding:7px 13px;cursor:pointer;transition:opacity .2s;white-space:nowrap}
+#panel-meals .ml-add-btn:hover{opacity:.85}
+#panel-meals .ml-nstrip{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);border-radius:12px;overflow:hidden;margin-bottom:20px;border:1px solid var(--border)}
+#panel-meals .ml-nsc{background:rgba(255,255,255,.04);padding:11px 13px;text-align:center}
+#panel-meals .ml-nsc-tot{background:rgba(255,255,255,.07)}
+#panel-meals .ml-nsc-l{font-size:9px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+#panel-meals .ml-nsc-cal{font-family:'Bebas Neue',sans-serif;font-size:20px;line-height:1;color:var(--text)}
+#panel-meals .ml-nsc-cal sub{font-size:10px;color:var(--muted);font-family:'DM Sans',sans-serif}
+#panel-meals .ml-nsc-m{font-size:9px;color:var(--muted);display:flex;justify-content:center;gap:5px;margin-top:2px}
+#panel-meals .ml-mp{color:#6b9e72}
+#panel-meals .ml-mc{color:#d4933a}
+#panel-meals .ml-mf{color:#7090c0}
+@media(max-width:580px){#panel-meals .ml-nstrip{grid-template-columns:1fr 1fr}#panel-meals .ml-nsc-tot{grid-column:1/-1}}
+#panel-meals .ml-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px;overflow-x:auto;scrollbar-width:none}
+#panel-meals .ml-tabs::-webkit-scrollbar{display:none}
+#panel-meals .ml-tab{padding:9px 15px;font-size:12px;font-weight:500;color:var(--muted);cursor:pointer;border:none;background:none;font-family:'DM Sans',sans-serif;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all .14s}
+#panel-meals .ml-tab:hover{color:var(--text)}
+#panel-meals .ml-tab.on{color:#d4933a;border-bottom-color:#d4933a}
+#panel-meals .ml-tp{display:none}
+#panel-meals .ml-tp.on{display:block}
+#panel-meals .ml-sec-title{font-family:'Playfair Display',Georgia,serif;font-size:14px;font-weight:600;margin-bottom:9px;padding-bottom:6px;border-bottom:1px solid var(--border);color:var(--text)}
+#panel-meals ul.ml-ings{list-style:none;margin-bottom:18px}
+#panel-meals .ml-ir{display:flex;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);gap:9px;font-size:13px}
+#panel-meals .ml-ir:last-child{border-bottom:none}
+#panel-meals .ml-iamt{font-weight:600;color:#d4933a;min-width:50px;text-align:right;font-size:11.5px;flex-shrink:0}
+#panel-meals .ml-iunit{color:var(--muted);font-size:11px;min-width:24px;flex-shrink:0}
+#panel-meals .ml-iname{flex:1;color:var(--text)}
+#panel-meals .ml-steps{list-style:none}
+#panel-meals .ml-step{display:flex;gap:11px;margin-bottom:14px;align-items:flex-start}
+#panel-meals .ml-sn{width:24px;height:24px;border-radius:50%;background:rgba(212,147,58,.14);border:1px solid rgba(212,147,58,.3);color:#d4933a;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+#panel-meals .ml-st{flex:1;color:var(--muted);line-height:1.75;font-size:13px}
+#panel-meals .ml-nt{margin-bottom:18px;background:rgba(255,255,255,.04);border-radius:12px;border:1px solid var(--border);overflow:hidden}
+#panel-meals .ml-nth{padding:9px 13px;border-bottom:1px solid var(--border);font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
+#panel-meals table.ml-ntab{width:100%;border-collapse:collapse}
+#panel-meals .ml-ntab th{padding:7px 13px;text-align:right;font-size:10px;font-weight:500;color:var(--muted)}
+#panel-meals .ml-ntab th:first-child{text-align:left}
+#panel-meals .ml-ntab td{padding:7px 13px;text-align:right;font-size:12px;border-top:1px solid rgba(255,255,255,.04);color:var(--muted)}
+#panel-meals .ml-ntab td:first-child{text-align:left;color:var(--text)}
+#panel-meals .ml-ntab tr.hl td{font-weight:600;color:var(--text)}
+#panel-meals .ml-ntab tr.hl td:first-child{color:#d4933a}
+#panel-meals .ml-notes-box{background:rgba(255,255,255,.04);border:1px solid var(--border);border-left:3px solid #d4933a;border-radius:12px;padding:13px 15px;color:var(--muted);font-size:13px;line-height:1.8}
+#panel-meals .ml-empty{text-align:center;padding:50px 20px;color:var(--muted)}
+#panel-meals .ml-empty-ico{font-size:38px;margin-bottom:11px}
+#panel-meals .ml-form-wrap{padding-bottom:28px}
+#panel-meals .ml-f-title{font-family:'Playfair Display',Georgia,serif;font-size:21px;font-weight:700;margin-bottom:16px;color:var(--text)}
+#panel-meals .ml-fs{margin-bottom:20px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+#panel-meals .ml-fsh{padding:11px 15px;background:rgba(255,255,255,.06);border-bottom:1px solid var(--border);font-family:'Playfair Display',Georgia,serif;font-size:14px;font-weight:600;color:var(--text)}
+#panel-meals .ml-fb{padding:15px}
+#panel-meals .ml-f2{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+@media(max-width:480px){#panel-meals .ml-f2{grid-template-columns:1fr}}
+#panel-meals .ml-fg{margin-bottom:11px}
+#panel-meals .ml-fg:last-child{margin-bottom:0}
+#panel-meals .ml-fl{display:block;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:4px}
+#panel-meals input.ml-fi,#panel-meals select.ml-fi,#panel-meals textarea.ml-fi{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:8px 12px;outline:none;transition:border-color .14s}
+#panel-meals input.ml-fi:focus,#panel-meals select.ml-fi:focus,#panel-meals textarea.ml-fi:focus{border-color:#d4933a}
+#panel-meals input.ml-fi::placeholder,#panel-meals textarea.ml-fi::placeholder{color:var(--muted)}
+#panel-meals textarea.ml-fi{resize:vertical;min-height:62px;line-height:1.6}
+#panel-meals .ml-rep{display:flex;flex-direction:column;gap:6px}
+#panel-meals .ml-rr{display:flex;gap:6px;align-items:center}
+#panel-meals .ml-rr .ml-fi{flex:1}
+#panel-meals .ml-rr .ml-amt{max-width:68px}
+#panel-meals .ml-rr .ml-unt{max-width:68px}
+#panel-meals .ml-rmv{width:25px;height:25px;flex-shrink:0;border-radius:6px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .13s}
+#panel-meals .ml-rmv:hover{background:rgba(190,70,60,.14);color:#e07060;border-color:rgba(190,70,60,.3)}
+#panel-meals .ml-add-row{display:flex;align-items:center;justify-content:center;gap:6px;color:#d4933a;background:transparent;border:1px dashed rgba(212,147,58,.28);border-radius:7px;padding:7px;font-size:12px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;width:100%;transition:all .14s;margin-top:2px}
+#panel-meals .ml-add-row:hover{background:rgba(212,147,58,.14);border-color:#d4933a}
+#panel-meals .ml-srep{display:flex;flex-direction:column;gap:7px}
+#panel-meals .ml-srr{display:flex;gap:7px;align-items:flex-start}
+#panel-meals .ml-snbadge{width:23px;height:23px;border-radius:50%;background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--muted);font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:8px}
+#panel-meals .ml-nfg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+@media(max-width:460px){#panel-meals .ml-nfg{grid-template-columns:repeat(2,1fr)}}
+#panel-meals .ml-side-tog{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);cursor:pointer;margin-bottom:14px;user-select:none;padding:11px 15px;background:rgba(255,255,255,.04);border-radius:8px}
+#panel-meals .ml-tog{width:30px;height:17px;background:var(--border);border-radius:8px;position:relative;transition:background .2s;flex-shrink:0}
+#panel-meals .ml-tog::after{content:'';position:absolute;width:11px;height:11px;border-radius:50%;background:var(--muted);top:3px;left:3px;transition:all .2s}
+#panel-meals .ml-tog.on{background:#d4933a}
+#panel-meals .ml-tog.on::after{left:16px;background:white}
+#panel-meals .ml-picker-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9000;display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .25s}
+#panel-meals .ml-picker-overlay.vis{opacity:1;pointer-events:all}
+#panel-meals .ml-picker-box{background:rgba(15,14,13,.98);border:1px solid var(--border);border-radius:16px;padding:26px;max-width:380px;width:100%;text-align:center;position:relative;transform:translateY(16px);transition:transform .25s .05s}
+#panel-meals .ml-picker-overlay.vis .ml-picker-box{transform:translateY(0)}
+#panel-meals .ml-picker-emj{font-size:50px;margin-bottom:10px;display:block}
+#panel-meals .ml-picker-title{font-family:'Playfair Display',Georgia,serif;font-size:21px;font-weight:700;margin-bottom:5px;color:var(--text)}
+#panel-meals .ml-picker-desc{color:var(--muted);font-size:12.5px;line-height:1.6;margin-bottom:13px}
+#panel-meals .ml-picker-cal{display:inline-flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;margin-bottom:16px}
+#panel-meals .ml-picker-acts{display:flex;gap:8px;justify-content:center}
+#panel-meals .ml-picker-close{position:absolute;top:11px;right:11px;background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;padding:4px}
+#panel-meals .ml-picker-close:hover{color:var(--text)}
 </style>
 </head>
 <body>
@@ -365,7 +567,7 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
 <!-- HEADER -->
 <header>
   <div>
-    <div class="logo"><em>Jay's</em> VITALS<span>/ HEALTH TRACKER</span></div>
+    <div class="logo"><em id="logoName">Jay's</em> <span id="logoTitle" style="-webkit-text-fill-color:transparent;background:linear-gradient(135deg,var(--neon),var(--neon2));-webkit-background-clip:text;background-clip:text">VITALS</span><span id="logoSub">/ HEALTH TRACKER</span></div>
   </div>
   <div class="date-box">
     <strong id="hdrDate">—</strong>
@@ -378,6 +580,7 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
 <div class="tabs">
   <button class="tab-btn active"  onclick="tab('calories')">⚡ Calories</button>
   <button class="tab-btn"         onclick="tab('exercise')">🏃 Exercise</button>
+  <button class="tab-btn"         onclick="tab('meals')">🍽️ Meal Library</button>
   <button class="tab-btn"         onclick="tab('alcohol')">🍺 Alcohol</button>
   <button class="tab-btn"         onclick="tab('daily')">💧 Daily Log</button>
   <button class="tab-btn"         onclick="tab('checkin')">⚖️ Sunday Check-in</button>
@@ -1002,6 +1205,14 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
 </div>
 
 <!-- ═══════════════════════════════════════════════════
+     MEAL LIBRARY PANEL
+═══════════════════════════════════════════════════ -->
+<div class="panel" id="panel-meals">
+  <div class="glow-bar" style="background:linear-gradient(90deg,#d4933a,#e8b56a,transparent)"></div>
+  <div id="ml-app"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
      HISTORY PANEL
 ═══════════════════════════════════════════════════ -->
 <div class="panel" id="panel-history">
@@ -1097,6 +1308,66 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
 
   <!-- Import preview modal trigger area -->
   <div id="importPreviewArea" style="display:none" class="card mt16" style="border-color:rgba(0,245,160,.25)">
+  </div>
+
+  <!-- Personalisation card -->
+  <div class="card mt16" style="border-color:rgba(168,85,247,.2)">
+    <div class="card-title" style="color:var(--purple)">🎨 PERSONALISE</div>
+
+    <!-- Name customisation -->
+    <div style="margin-bottom:22px">
+      <div style="font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Your Name &amp; App Title</div>
+      <div class="flex gap8 wrap-flex aic">
+        <div class="inp-wrap" style="max-width:180px">
+          <input type="text" id="settingName" placeholder="Jay's" maxlength="20" style="font-size:14px;font-weight:400;padding-right:12px">
+        </div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--muted)">VITALS</div>
+        <div class="inp-wrap" style="max-width:220px">
+          <input type="text" id="settingSubtitle" placeholder="/ HEALTH TRACKER" maxlength="30" style="font-size:12px;font-weight:400;padding-right:12px">
+        </div>
+        <button class="btn" onclick="saveName()" style="padding:11px 16px;white-space:nowrap">Save</button>
+      </div>
+      <div style="font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:8px">Preview: <strong id="namePreview" style="color:var(--text)">Jay's VITALS</strong></div>
+    </div>
+
+    <!-- Theme picker -->
+    <div style="font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Colour Theme</div>
+    <div class="theme-cards">
+
+      <div class="theme-card" id="theme-neon" onclick="setTheme('neon')" style="background:rgba(0,245,160,0.06);border-color:rgba(0,245,160,0.2)">
+        <div class="theme-tick">✓</div>
+        <div class="tc-swatch">
+          <div class="tc-dot" style="background:#00f5a0"></div>
+          <div class="tc-dot" style="background:#00d9f5"></div>
+          <div class="tc-dot" style="background:#080c10"></div>
+        </div>
+        <div class="tc-name">Neon Dark</div>
+        <div style="font-size:9px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:3px">Default</div>
+      </div>
+
+      <div class="theme-card" id="theme-blossom" onclick="setTheme('blossom')" style="background:rgba(255,133,179,0.06);border-color:rgba(255,133,179,0.2)">
+        <div class="theme-tick">✓</div>
+        <div class="tc-swatch">
+          <div class="tc-dot" style="background:#ff85b3"></div>
+          <div class="tc-dot" style="background:#ffb3d1"></div>
+          <div class="tc-dot" style="background:#1a0a14"></div>
+        </div>
+        <div class="tc-name">Blossom</div>
+        <div style="font-size:9px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:3px">Rose &amp; Pink</div>
+      </div>
+
+      <div class="theme-card" id="theme-midnight" onclick="setTheme('midnight')" style="background:rgba(255,215,0,0.06);border-color:rgba(255,215,0,0.2)">
+        <div class="theme-tick">✓</div>
+        <div class="tc-swatch">
+          <div class="tc-dot" style="background:#ffd700"></div>
+          <div class="tc-dot" style="background:#f0a500"></div>
+          <div class="tc-dot" style="background:#07090f"></div>
+        </div>
+        <div class="tc-name">Midnight</div>
+        <div style="font-size:9px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-top:3px">Gold &amp; Navy</div>
+      </div>
+
+    </div>
   </div>
 
   <!-- JSONBin Sync card -->
@@ -1521,6 +1792,10 @@ window.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('hdrDate').textContent = now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
   document.getElementById('hdrDay').textContent  = now.toLocaleDateString('en-GB',{weekday:'long'}).toUpperCase();
 
+  // Apply saved theme and name immediately (before cloud pull so no flash)
+  loadTheme();
+  loadName();
+
   // Pull from cloud first if configured (silently merges into localStorage)
   updateJbStatus();
   await pullFromCloud(false);
@@ -1571,6 +1846,52 @@ function refreshGoalDisplays() {
   document.getElementById('dispWaterGoal').textContent = WATER_GOAL;
 }
 
+// ═══════════════════════════════════════════════════════════
+//  PERSONALISATION — themes & name
+// ═══════════════════════════════════════════════════════════
+const THEMES = ['neon','blossom','midnight'];
+
+function setTheme(name) {
+  document.documentElement.setAttribute('data-theme', name === 'neon' ? '' : name);
+  localStorage.setItem('v_theme', name);
+  // Update active card
+  THEMES.forEach(t => {
+    const c = document.getElementById('theme-' + t);
+    if (c) c.classList.toggle('active', t === name);
+  });
+}
+
+function loadTheme() {
+  const t = localStorage.getItem('v_theme') || 'neon';
+  setTheme(t);
+}
+
+function saveName() {
+  const name     = document.getElementById('settingName').value.trim()     || "Jay's";
+  const subtitle = document.getElementById('settingSubtitle').value.trim() || '/ HEALTH TRACKER';
+  localStorage.setItem('v_name',     name);
+  localStorage.setItem('v_subtitle', subtitle);
+  applyName(name, subtitle);
+  showToast('✅ Name updated!');
+}
+
+function applyName(name, subtitle) {
+  const nameEl = document.getElementById('logoName');
+  const subEl  = document.getElementById('logoSub');
+  if (nameEl) nameEl.textContent = name;
+  if (subEl)  subEl.textContent  = subtitle;
+  document.title = name + ' VITALS — Health Tracker';
+  // Update preview
+  const prev = document.getElementById('namePreview');
+  if (prev) prev.textContent = name + ' VITALS';
+}
+
+function loadName() {
+  const name     = localStorage.getItem('v_name')     || "Jay's";
+  const subtitle = localStorage.getItem('v_subtitle') || '/ HEALTH TRACKER';
+  applyName(name, subtitle);
+}
+
 function initSettingsInputs() {
   const { goals } = ld();
   document.getElementById('settingCalGoal').value   = goals.cal || 2500;
@@ -1580,6 +1901,24 @@ function initSettingsInputs() {
   if (apiKey) document.getElementById('settingApiKey').value = apiKey;
   const jbKey = getJbKey();
   if (jbKey) document.getElementById('settingJbKey').value = jbKey;
+  // Name fields
+  const name     = localStorage.getItem('v_name')     || "Jay's";
+  const subtitle = localStorage.getItem('v_subtitle') || '/ HEALTH TRACKER';
+  document.getElementById('settingName').value     = name;
+  document.getElementById('settingSubtitle').value = subtitle;
+  document.getElementById('namePreview').textContent = name + ' VITALS';
+  // Active theme card
+  const t = localStorage.getItem('v_theme') || 'neon';
+  THEMES.forEach(th => {
+    const c = document.getElementById('theme-' + th);
+    if (c) c.classList.toggle('active', th === t);
+  });
+  // Live name preview as user types
+  const nameInput = document.getElementById('settingName');
+  const subInput  = document.getElementById('settingSubtitle');
+  if (nameInput) nameInput.oninput = () => {
+    document.getElementById('namePreview').textContent = (nameInput.value.trim() || "Jay's") + ' VITALS';
+  };
 }
 
 function saveGoal(type) {
@@ -2931,7 +3270,7 @@ function exportCSV() {
 // ═══════════════════════════════════════════════════════════
 //  UI HELPERS
 // ═══════════════════════════════════════════════════════════
-const TABS = ['calories','exercise','alcohol','daily','checkin','charts','history','settings'];
+const TABS = ['calories','exercise','meals','alcohol','daily','checkin','charts','history','settings'];
 
 function tab(name) {
   document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', TABS[i] === name));
@@ -2943,6 +3282,7 @@ function tab(name) {
   if (name === 'checkin')  { updateCheckinStats(); buildGoalWeightCard(); buildHomeGoalBar(); }
   if (name === 'exercise') { loadTodayExercise(); renderExLogged(); }
   if (name === 'alcohol')  buildAlcoholGrid();
+  if (name === 'meals')    { mlLoadMeals(); mlRender(); }
 }
 
 function showToast(msg) {
@@ -3360,6 +3700,434 @@ document.addEventListener('keydown', e => {
     closeImportModal();
   }
 });
+
+// ═══════════════════════════════════════════════════════════
+//  MEAL LIBRARY — prefixed ML_ to avoid collisions
+// ═══════════════════════════════════════════════════════════
+const ML_DEFAULTS=[{id:1,emoji:"🍗",name:"Chicken Cacciatore with Spaghetti",description:"A rustic Italian hunter's stew with mushrooms, olives and pancetta over wholewheat spaghetti",servings:4,prepTime:15,cookTime:40,tags:["pasta","chicken","italian"],main:{ingredients:[{amount:"4",unit:"",name:"Skinless boneless chicken thighs"},{amount:"2",unit:"tbsp",name:"Olive oil"},{amount:"125",unit:"g",name:"Oyster mushrooms"},{amount:"125",unit:"g",name:"Chestnut mushrooms"},{amount:"4",unit:"rashers",name:"Smoked pancetta"},{amount:"2–3",unit:"sprigs",name:"Fresh rosemary"},{amount:"2",unit:"",name:"Anchovy fillets"},{amount:"2",unit:"",name:"Jarred red peppers"},{amount:"handful",unit:"",name:"Black olives (stoned)"},{amount:"2",unit:"cloves",name:"Garlic"},{amount:"1",unit:"",name:"Red chilli"},{amount:"60",unit:"ml",name:"Red wine"},{amount:"700",unit:"g",name:"Passata"},{amount:"1",unit:"bunch",name:"Fresh basil"},{amount:"320",unit:"g",name:"Wholewheat spaghetti"},{amount:"30",unit:"g",name:"Parmesan"}],method:["Cut chicken into bite-sized chunks. Heat a large pan with 2 tbsp oil. Add chicken with salt & pepper and cook until starting to brown.","Add mushrooms, chopped pancetta, rosemary, anchovies, torn red peppers and olives. Cook on medium-high heat, stirring regularly until everything is golden.","Crush in the garlic. Add sliced chilli, red wine and passata. Season to taste. Simmer gently.","Boil salted water and cook spaghetti according to packet.","Tear in half the basil. Let the sauce simmer until slightly thickened.","Drain pasta, saving a little cooking water. Add pasta to the sauce or plate separately. Loosen with a splash of pasta water if needed.","Top with remaining basil and grated Parmesan."],nutrition:{perPortion:{calories:613,protein:42,carbs:58,fat:18,fibre:8,salt:1.2},per100g:{calories:168,protein:11.5,carbs:15.9,fat:4.9,fibre:2.2,salt:0.33}}},side:null,notes:"Great batch cook meal. The sauce improves overnight. Serve with extra Parmesan at the table.",createdAt:"2026-03-01"},{id:2,emoji:"🌶️",name:"Chilli Con Carne",description:"A hearty beef and bean chilli with a secret dark chocolate depth",servings:4,prepTime:10,cookTime:55,tags:["beef","batch cook","low calorie"],main:{ingredients:[{amount:"2",unit:"tbsp",name:"Olive oil"},{amount:"450",unit:"g",name:"Minced beef"},{amount:"1 large",unit:"",name:"Onion (finely chopped)"},{amount:"1",unit:"tsp",name:"Chilli powder"},{amount:"1",unit:"tsp",name:"Ground cumin"},{amount:"3",unit:"tbsp",name:"Tomato purée"},{amount:"300",unit:"ml",name:"Hot vegetable stock"},{amount:"400",unit:"g",name:"Tinned chopped tomatoes"},{amount:"25",unit:"g",name:"Dark chocolate"},{amount:"400",unit:"g",name:"Kidney beans (drained)"},{amount:"handful",unit:"",name:"Fresh coriander (optional)"}],method:["Heat 1 tbsp oil in a large pan. Add the minced beef and cook for ~10 minutes until browned, breaking it up as it cooks. Remove from the pan and set aside.","Add the remaining 1 tbsp oil. Fry the chopped onion for ~10 minutes until soft and slightly golden.","Stir in the chilli powder and cumin. Cook for about 1 minute to bring out the flavour.","Add the cooked beef back in, then tomato purée, hot stock and chopped tomatoes. Bring to the boil, then reduce to a gentle simmer. Cook uncovered for 35–40 minutes, stirring occasionally, until thick.","Stir in dark chocolate, kidney beans and coriander. Season with salt & pepper. Simmer for another 5 minutes.","Serve hot with rice or on its own for a lower-cal option."],nutrition:{perPortion:{calories:420,protein:28,carbs:28,fat:22,fibre:8,salt:1.0},per100g:{calories:140,protein:9.3,carbs:9.3,fat:7.3,fibre:2.7,salt:0.33}}},side:null,notes:"Tastes better the next day. Freezes brilliantly. The chocolate doesn't make it sweet — just deepens the flavour.",createdAt:"2026-03-02"},{id:3,emoji:"🍝",name:"Creamy BBQ Chicken Pasta",description:"Baked chicken with BBQ sauce and cream cheese, tossed through pasta",servings:4,prepTime:10,cookTime:50,tags:["pasta","chicken","high protein"],main:{ingredients:[{amount:"300",unit:"g",name:"Diced chicken breast"},{amount:"1",unit:"",name:"Pepper (chopped)"},{amount:"1/2",unit:"",name:"Onion (chopped)"},{amount:"2",unit:"tsp",name:"Garlic"},{amount:"1/2 pkt",unit:"",name:"Smoky BBQ seasoning"},{amount:"1/2 tin",unit:"",name:"Chopped tomatoes"},{amount:"25",unit:"g",name:"BBQ sauce"},{amount:"100",unit:"g",name:"Low-fat cream cheese"},{amount:"100",unit:"g",name:"Dry pasta"},{amount:"40",unit:"g",name:"Reduced-fat grated cheese"}],method:["Preheat oven to 190C. In a baking dish, add diced chicken, pepper, onion, garlic and BBQ seasoning. Mix well.","Add chopped tomatoes, BBQ sauce and cream cheese. Mix everything together.","Cook in the oven for ~45–50 minutes, stirring once halfway through.","Boil salted water and cook pasta according to packet. Drain.","Mix the cooked pasta into the sauce. Top with grated cheese and let it melt.","Split into 4 portions and serve."],nutrition:{perPortion:{calories:276,protein:25,carbs:25,fat:8,fibre:3,salt:1.2},per100g:{calories:105,protein:9.5,carbs:9.5,fat:3.0,fibre:1.1,salt:0.46}}},side:null,notes:"One of the best options for fat loss — high protein, lean, controlled pasta.",createdAt:"2026-03-03"},{id:4,emoji:"🍛",name:"One-Pot Curried Sausage & Beans",description:"Quick and comforting curried sausages with baked beans",servings:4,prepTime:5,cookTime:25,tags:["sausage","quick","batch cook"],main:{ingredients:[{amount:"8",unit:"",name:"Sausages"},{amount:"1",unit:"",name:"Onion (chopped)"},{amount:"1",unit:"tbsp",name:"Oil"},{amount:"2",unit:"tsp",name:"Curry powder"},{amount:"2",unit:"tsp",name:"Turmeric"},{amount:"1",unit:"",name:"Vegetable stock cube"},{amount:"150",unit:"ml",name:"Boiling water"},{amount:"400",unit:"g",name:"Tinned baked beans"}],method:["Grill or fry the sausages until fully cooked. Cut each into bite-sized pieces. Set aside.","Heat the oil in a pan on low heat. Add the onion and cook gently until soft, about 8–10 minutes.","Stir in curry powder and turmeric. Cook for 1 minute.","Dissolve the stock cube in the boiling water. Pour into the pan and cook for 2 minutes.","Add baked beans and chopped sausages. Stir everything together and simmer until hot through.","Serve as-is or with rice."],nutrition:{perPortion:{calories:500,protein:20,carbs:35,fat:30,fibre:6,salt:2.0},per100g:{calories:175,protein:7.0,carbs:12.3,fat:10.5,fibre:2.1,salt:0.70}}},side:null,notes:"Use reduced-fat sausages to save 300–600 kcal total.",createdAt:"2026-03-04"},{id:5,emoji:"🍝",name:"Pregnant Jools Pasta",description:"Jamie Oliver's quick sausage ragu with fennel and balsamic over penne",servings:6,prepTime:15,cookTime:30,tags:["pasta","sausage","batch cook"],main:{ingredients:[{amount:"4",unit:"",name:"Spring onions"},{amount:"1",unit:"",name:"Carrot"},{amount:"1 stick",unit:"",name:"Celery"},{amount:"1–2",unit:"",name:"Red chillies"},{amount:"6",unit:"",name:"Sausages (skins off)"},{amount:"1",unit:"tsp",name:"Fennel seeds"},{amount:"1",unit:"tsp",name:"Dried oregano"},{amount:"1",unit:"tbsp",name:"Olive oil"},{amount:"500",unit:"g",name:"Penne pasta"},{amount:"4",unit:"cloves",name:"Garlic"},{amount:"4",unit:"tbsp",name:"Balsamic vinegar"},{amount:"400",unit:"g",name:"Tinned chopped tomatoes"},{amount:"handful",unit:"",name:"Parmesan (to serve)"},{amount:"handful",unit:"",name:"Fresh basil (optional)"}],method:["Roughly chop the spring onions, carrot, celery and chillies. Blitz in a food processor until finely chopped.","Add the sausages (skins off), fennel seeds and oregano. Pulse again until mixed into a rough mince.","Heat a large frying pan with olive oil. Add the mixture and cook on high heat, breaking it up and stirring until browned.","Boil salted water and cook the penne according to the packet.","Crush in the garlic, then add balsamic vinegar and chopped tomatoes. Let it simmer.","Drain the pasta. Mix into the sauce, loosening with reserved water until silky.","Serve with grated Parmesan and fresh basil on top."],nutrition:{perPortion:{calories:550,protein:24,carbs:60,fat:23,fibre:5,salt:1.4},per100g:{calories:195,protein:8.5,carbs:21.3,fat:8.2,fibre:1.8,salt:0.50}}},side:null,notes:"Fennel + balsamic gives it a punchy, slightly sweet flavour.",createdAt:"2026-03-05"},{id:8,emoji:"🍜",name:"Sesame Honey Chicken Noodles",description:"A sticky saucy stir-fry with chicken, colourful veg and egg noodles in a honey sesame glaze",servings:3,prepTime:10,cookTime:20,tags:["chicken","noodles","high protein","quick"],main:{ingredients:[{amount:"1/2",unit:"tbsp",name:"Sesame oil"},{amount:"300",unit:"g",name:"Diced chicken breast"},{amount:"1",unit:"",name:"Red pepper (diced)"},{amount:"2",unit:"",name:"Spring onions (chopped)"},{amount:"1",unit:"",name:"Carrot (shaved into strips)"},{amount:"2",unit:"cloves",name:"Garlic (crushed)"},{amount:"100",unit:"ml",name:"Chicken stock"},{amount:"1.5",unit:"tbsp",name:"Cornflour"},{amount:"2",unit:"tbsp",name:"Honey"},{amount:"3",unit:"tbsp",name:"Soy sauce"},{amount:"100",unit:"g",name:"Peas & sweetcorn (frozen)"},{amount:"150",unit:"g",name:"Dried egg noodles"},{amount:"1/2",unit:"tbsp",name:"Sesame seeds"}],method:["Heat sesame oil in a wok or large pan. Add chicken and cook for 6–7 minutes until mostly cooked through.","Add pepper, spring onions, carrot and garlic. Cook for another 3–4 minutes until softened.","In a bowl, mix together chicken stock, cornflour, honey and soy sauce. Stir well so no lumps.","Boil noodles according to packet, then drain.","Add peas & sweetcorn and the sauce to the pan. Cook until the sauce thickens and coats everything.","Add cooked noodles and toss everything together. Sprinkle with sesame seeds."],nutrition:{perPortion:{calories:425,protein:35,carbs:52,fat:7,fibre:4,salt:2.2},per100g:{calories:150,protein:12.4,carbs:18.4,fat:2.5,fibre:1.4,salt:0.78}}},side:null,notes:"Split into 3 portions for a perfect ~425 kcal meal.",createdAt:"2026-03-08"},{id:9,emoji:"🍝",name:"Spaghetti Bolognese",description:"A proper slow-simmered Bolognese with lean beef, red wine, mushrooms and Worcestershire sauce",servings:6,prepTime:10,cookTime:35,tags:["pasta","beef","batch cook"],main:{ingredients:[{amount:"2",unit:"tbsp",name:"Olive oil"},{amount:"1",unit:"",name:"Onion (finely chopped)"},{amount:"2",unit:"cloves",name:"Garlic (crushed)"},{amount:"450",unit:"g",name:"Extra-lean minced beef"},{amount:"2",unit:"tbsp",name:"Sun-dried tomato paste"},{amount:"300",unit:"ml",name:"Red wine"},{amount:"400",unit:"g",name:"Tinned chopped tomatoes"},{amount:"125",unit:"g",name:"Mushrooms (sliced)"},{amount:"2",unit:"tbsp",name:"Worcestershire sauce"},{amount:"500",unit:"g",name:"Dried spaghetti"},{amount:"50",unit:"g",name:"Parmesan (grated)"}],method:["Heat the olive oil in a large pan. Add onion and cook on medium heat for ~10 minutes until soft and slightly golden.","Stir in the garlic and cook for 1 minute.","Add the minced beef. Cook until browned, breaking it up as you go.","Stir in tomato paste and red wine. Bring to the boil briefly. Then add chopped tomatoes, mushrooms, Worcestershire sauce, salt & pepper.","Bring back to the boil, then reduce heat. Simmer gently for ~20 minutes until slightly thickened.","Boil salted water and cook spaghetti until al dente. Drain well.","Add the spaghetti back into the pan or plate separately. Serve with grated Parmesan on top."],nutrition:{perPortion:{calories:510,protein:30,carbs:67,fat:12,fibre:5,salt:1.5},per100g:{calories:170,protein:10.0,carbs:22.3,fat:4.0,fibre:1.7,salt:0.50}}},side:null,notes:"Core meal for any rotation. Use 350g pasta instead of 500g to cut calories.",createdAt:"2026-03-09"},{id:15,emoji:"🍳",name:"Shakshuka",description:"Eggs poached in a spiced tomato and pepper sauce — low calorie, filling and ready in 30 minutes",servings:2,prepTime:5,cookTime:25,tags:["vegetarian","low calorie","quick","high protein"],main:{ingredients:[{amount:"1",unit:"tbsp",name:"Olive oil"},{amount:"1/2",unit:"",name:"Onion (chopped)"},{amount:"1/2",unit:"",name:"Red pepper (chopped)"},{amount:"1–2",unit:"cloves",name:"Garlic (crushed)"},{amount:"1/2",unit:"tsp",name:"Paprika"},{amount:"1/2",unit:"tsp",name:"Cumin"},{amount:"1/4–1/2",unit:"tsp",name:"Chilli flakes (optional)"},{amount:"400",unit:"g",name:"Tinned chopped tomatoes"},{amount:"2–3",unit:"",name:"Eggs"},{amount:"handful",unit:"",name:"Fresh parsley or coriander (optional)"},{amount:"handful",unit:"",name:"Feta cheese (optional)"}],method:["Heat olive oil in a wide pan on medium heat. Add the onion and pepper and cook for 8–10 minutes until softened.","Add the garlic, paprika, cumin and chilli flakes. Cook for 1 minute, stirring so the spices don't burn.","Pour in the chopped tomatoes. Season with salt & pepper and simmer for 10–15 minutes until slightly thickened.","Make small wells in the sauce and crack the eggs in. Cover the pan with a lid.","Cook for 5–8 minutes depending on how you like your eggs.","Finish with fresh herbs and crumbled feta if using."],nutrition:{perPortion:{calories:250,protein:14,carbs:15,fat:14,fibre:4,salt:0.6},per100g:{calories:75,protein:4.2,carbs:4.5,fat:4.2,fibre:1.2,salt:0.18}}},side:null,notes:"Whole pan is ~500 kcal — just split it in two.",createdAt:"2026-03-15"}];
+
+let mlMeals=[];
+let MLS={view:'list',id:null,tab:'ingredients',search:'',filters:[],sort:'newest'};
+let mlPickedId=null;
+
+function mlLoadMeals(){
+  try{const s=localStorage.getItem('ml_meals');mlMeals=s?JSON.parse(s):JSON.parse(JSON.stringify(ML_DEFAULTS));}
+  catch(e){mlMeals=JSON.parse(JSON.stringify(ML_DEFAULTS));}
+}
+
+function mlSaveMeals(){
+  try{localStorage.setItem('ml_meals',JSON.stringify(mlMeals));}catch(e){}
+}
+
+function mlGetMeal(id){return mlMeals.find(m=>m.id===id);}
+
+function mlCalClass(c){
+  if(c<450)return 'ml-cal-lo';
+  if(c<600)return 'ml-cal-mid';
+  return 'ml-cal-hi';
+}
+
+function mlEsc(s){
+  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function mlGetTotal(meal,basis){
+  const m=meal.main.nutrition[basis];
+  if(!meal.side)return m;
+  const s=meal.side.nutrition[basis];
+  return{calories:(m.calories||0)+(s.calories||0),protein:(m.protein||0)+(s.protein||0),carbs:(m.carbs||0)+(s.carbs||0),fat:(m.fat||0)+(s.fat||0),fibre:(m.fibre||0)+(s.fibre||0),salt:(m.salt||0)+(s.salt||0)};
+}
+
+function mlGetAllTags(){
+  const s=new Set();
+  mlMeals.forEach(m=>m.tags.forEach(t=>s.add(t)));
+  return Array.from(s).sort();
+}
+
+function mlGetFiltered(){
+  let ms=[...mlMeals];
+  if(MLS.search){const q=MLS.search.toLowerCase();ms=ms.filter(m=>m.name.toLowerCase().includes(q)||(m.description||'').toLowerCase().includes(q)||m.tags.some(t=>t.toLowerCase().includes(q)));}
+  if(MLS.filters.length)ms=ms.filter(m=>MLS.filters.every(f=>m.tags.includes(f)));
+  if(MLS.sort==='newest')ms.sort((a,b)=>b.id-a.id);
+  else if(MLS.sort==='oldest')ms.sort((a,b)=>a.id-b.id);
+  else if(MLS.sort==='cal-asc')ms.sort((a,b)=>a.main.nutrition.perPortion.calories-b.main.nutrition.perPortion.calories);
+  else if(MLS.sort==='cal-desc')ms.sort((a,b)=>b.main.nutrition.perPortion.calories-a.main.nutrition.perPortion.calories);
+  else if(MLS.sort==='az')ms.sort((a,b)=>a.name.localeCompare(b.name));
+  return ms;
+}
+
+function mlRender(){
+  const app=document.getElementById('ml-app');
+  if(!app)return;
+  if(MLS.view==='list')app.innerHTML=mlRenderList();
+  else if(MLS.view==='detail')app.innerHTML=mlRenderDetail();
+  else app.innerHTML=mlRenderForm();
+}
+
+function mlRenderList(){
+  const ms=mlGetFiltered();
+  const allTags=mlGetAllTags();
+  const chips=allTags.map(t=>`<button class="ml-chip${MLS.filters.includes(t)?' on':''}" onclick="mlFilterTag('${mlEsc(t)}')">${mlEsc(t)}</button>`).join('');
+  const cards=ms.length?ms.map(m=>{
+    const tot=mlGetTotal(m,'perPortion');
+    return`<div class="ml-card" onclick="mlGoDetail(${m.id})">
+      <div class="ml-card-head">
+        <div class="ml-card-emj">${m.emoji||'🍽️'}</div>
+        <div class="ml-card-tw">
+          <div class="ml-card-title">${mlEsc(m.name)}</div>
+          <div class="ml-card-desc">${mlEsc(m.description||'')}</div>
+        </div>
+        <div class="ml-cal-badge ${mlCalClass(tot.calories)}">${tot.calories}<span>kcal</span></div>
+      </div>
+      <div class="ml-card-meta"><span>👤 ${m.servings} servings</span><span>⏱ ${(m.prepTime||0)+(m.cookTime||0)} mins</span>${m.side?'<span style="color:#7090c0">+side</span>':''}</div>
+      <div class="ml-tags">${m.tags.map(t=>`<span class="ml-tag">${mlEsc(t)}</span>`).join('')}${m.side?'<span class="ml-tag ml-tag-s">with side</span>':''}</div>
+    </div>`;
+  }).join(''):`<div class="ml-empty" style="grid-column:1/-1"><div class="ml-empty-ico">🔍</div><div style="font-size:14px">No meals found</div></div>`;
+
+  return`<div class="ml-topbar">
+    <div class="ml-logo" onclick="mlGoList()"><em>Meal</em> Library</div>
+    <button class="ml-btn ml-btn-p ml-btn-sm" onclick="mlGoAdd()">＋ Add Meal</button>
+  </div>
+  <div class="ml-search-row">
+    <div class="ml-sw"><span class="ml-si">🔍</span><input class="ml-search" type="text" placeholder="Search meals, tags…" value="${mlEsc(MLS.search)}" oninput="MLS.search=this.value;mlRender()"></div>
+    <select class="ml-sort" onchange="MLS.sort=this.value;mlRender()">
+      <option value="newest"${MLS.sort==='newest'?' selected':''}>Newest</option>
+      <option value="oldest"${MLS.sort==='oldest'?' selected':''}>Oldest</option>
+      <option value="az"${MLS.sort==='az'?' selected':''}>A → Z</option>
+      <option value="cal-asc"${MLS.sort==='cal-asc'?' selected':''}>Cal ↑</option>
+      <option value="cal-desc"${MLS.sort==='cal-desc'?' selected':''}>Cal ↓</option>
+    </select>
+  </div>
+  ${allTags.length?`<div class="ml-filters"><button class="ml-chip${!MLS.filters.length?' on':''}" onclick="MLS.filters=[];mlRender()">All</button>${chips}</div>`:''}
+  <button class="ml-dinner-btn" onclick="mlPickRandom()">🎲 What shall I have for dinner?<span class="sub">Pick one at random from your library</span></button>
+  <div class="ml-count">${ms.length} meal${ms.length!==1?'s':''}</div>
+  <div class="ml-grid">${cards}</div>
+  <div class="ml-picker-overlay" id="ml-picker">
+    <div class="ml-picker-box">
+      <button class="ml-picker-close" onclick="mlClosePicker()">×</button>
+      <span class="ml-picker-emj" id="ml-pk-emj">🍽️</span>
+      <div class="ml-picker-title" id="ml-pk-title"></div>
+      <div class="ml-picker-desc" id="ml-pk-desc"></div>
+      <div class="ml-picker-cal" id="ml-pk-cal"></div>
+      <div class="ml-picker-acts">
+        <button class="ml-btn ml-btn-g ml-btn-sm" onclick="mlPickAnother()">🎲 Pick another</button>
+        <button class="ml-btn ml-btn-p ml-btn-sm" onclick="mlGoPickedMeal()">View recipe →</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function mlRenderDetail(){
+  const meal=mlGetMeal(MLS.id);
+  if(!meal)return mlRenderList();
+  const mnp=meal.main.nutrition.perPortion;
+  const mn1=meal.main.nutrition.per100g;
+  const tot=mlGetTotal(meal,'perPortion');
+  const tot1=mlGetTotal(meal,'per100g');
+  const snp=meal.side?meal.side.nutrition.perPortion:null;
+  const sn1=meal.side?meal.side.nutrition.per100g:null;
+
+  const strip=`<div class="ml-nstrip">
+    <div class="ml-nsc"><div class="ml-nsc-l">Main</div><div class="ml-nsc-cal">${mnp.calories}<sub> kcal</sub></div><div class="ml-nsc-m"><span class="ml-mp">P ${mnp.protein}g</span><span class="ml-mc">C ${mnp.carbs}g</span><span class="ml-mf">F ${mnp.fat}g</span></div></div>
+    <div class="ml-nsc">${meal.side?`<div class="ml-nsc-l">Side</div><div class="ml-nsc-cal">${snp.calories}<sub> kcal</sub></div><div class="ml-nsc-m"><span class="ml-mp">P ${snp.protein}g</span><span class="ml-mc">C ${snp.carbs}g</span><span class="ml-mf">F ${snp.fat}g</span></div>`:'<div class="ml-nsc-l">Side</div><div class="ml-nsc-cal" style="font-size:16px;color:var(--muted)">—</div>'}</div>
+    <div class="ml-nsc ml-nsc-tot"><div class="ml-nsc-l">Total</div><div class="ml-nsc-cal">${tot.calories}<sub> kcal</sub></div><div class="ml-nsc-m"><span class="ml-mp">P ${tot.protein}g</span><span class="ml-mc">C ${tot.carbs}g</span><span class="ml-mf">F ${tot.fat}g</span></div></div>
+  </div>`;
+
+  function ingList(ings,title){
+    if(!ings||!ings.length)return'';
+    return`<div class="ml-sec-title">${title}</div><ul class="ml-ings">${ings.map(i=>`<li class="ml-ir"><span class="ml-iamt">${mlEsc(i.amount)}</span><span class="ml-iunit">${mlEsc(i.unit)}</span><span class="ml-iname">${mlEsc(i.name)}</span></li>`).join('')}</ul>`;
+  }
+  function stepList(steps,title){
+    if(!steps||!steps.length)return'';
+    return`<div class="ml-sec-title">${title}</div><ol class="ml-steps">${steps.map((s,i)=>`<li class="ml-step"><div class="ml-sn">${i+1}</div><div class="ml-st">${mlEsc(s)}</div></li>`).join('')}</ol>`;
+  }
+  function nutTable(n,n1,label){
+    if(!n)return'';
+    return`<div class="ml-nt"><div class="ml-nth">${label}</div><table class="ml-ntab"><thead><tr><th>Nutrient</th><th>Per Portion</th><th>Per 100g</th></tr></thead><tbody><tr class="hl"><td>Calories</td><td>${n.calories} kcal</td><td>${n1.calories} kcal</td></tr><tr><td>Protein</td><td>${n.protein}g</td><td>${n1.protein}g</td></tr><tr><td>Carbohydrates</td><td>${n.carbs}g</td><td>${n1.carbs}g</td></tr><tr><td>Fat</td><td>${n.fat}g</td><td>${n1.fat}g</td></tr><tr><td>Fibre</td><td>${n.fibre}g</td><td>${n1.fibre}g</td></tr><tr><td>Salt</td><td>${n.salt}g</td><td>${n1.salt}g</td></tr></tbody></table></div>`;
+  }
+
+  const tabContent={
+    ingredients: ingList(meal.main.ingredients,meal.side?'🍳 Main':'🍳 Ingredients')+(meal.side?ingList(meal.side.ingredients,'🥗 '+(meal.side.name||'Side')):''),
+    method: stepList(meal.main.method,meal.side?'🍳 Main':'📋 Method')+(meal.side?stepList(meal.side.method,'🥗 '+(meal.side.name||'Side')):''),
+    nutrition: nutTable(mnp,mn1,'🍳 '+(meal.side?'Main Meal':'Nutrition'))+(meal.side?nutTable(snp,sn1,'🥗 '+(meal.side.name||'Side')):'')+(meal.side?nutTable(tot,tot1,'⚡ Combined Total'):''),
+    notes: meal.notes?`<div class="ml-notes-box">${mlEsc(meal.notes)}</div>`:'<div style="color:var(--muted);font-size:13px">No notes added.</div>'
+  };
+  const tabs=['ingredients','method','nutrition','notes'];
+  const tabLabels={ingredients:'🧺 Ingredients',method:'📋 Method',nutrition:'📊 Nutrition',notes:'📝 Notes'};
+
+  // Add to tracker section
+  const addSection=`<div class="ml-add-tracker">
+    <div class="ml-add-tracker-lbl">➕ ADD TO TODAY'S TRACKER</div>
+    <div class="ml-add-tracker-stats">
+      <span class="ml-at-stat">⚡ ${tot.calories} kcal</span>
+      ${tot.protein>0?`<span class="ml-at-stat">💪 ${tot.protein}g protein</span>`:''}
+      ${tot.fibre>0?`<span class="ml-at-stat">🌾 ${tot.fibre}g fibre</span>`:''}
+    </div>
+    <div style="font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace;margin-bottom:8px">Click a meal slot to add this meal's nutrition and save:</div>
+    <div class="ml-add-btns">
+      <button class="ml-add-btn" onclick="mlAddToTracker(${MLS.id},'breakfast')">🌅 Breakfast</button>
+      <button class="ml-add-btn" onclick="mlAddToTracker(${MLS.id},'lunch')">🌤 Lunch</button>
+      <button class="ml-add-btn" onclick="mlAddToTracker(${MLS.id},'tea')">🌙 Tea</button>
+      <button class="ml-add-btn" onclick="mlAddToTracker(${MLS.id},'snacks')">🍫 Snacks</button>
+    </div>
+  </div>`;
+
+  return`<div class="ml-topbar">
+    <div class="ml-logo" onclick="mlGoList()"><em>Meal</em> Library</div>
+    <button class="ml-btn ml-btn-g ml-btn-sm" onclick="mlGoList()">← All meals</button>
+  </div>
+  <div class="ml-dh">
+    <div class="ml-d-emj">${meal.emoji||'🍽️'}</div>
+    <div class="ml-d-ta">
+      <div class="ml-d-title">${mlEsc(meal.name)}</div>
+      <div class="ml-d-desc">${mlEsc(meal.description||'')}</div>
+      <div class="ml-d-meta"><span>👤 <strong>${meal.servings}</strong> servings</span><span>⏳ Prep <strong>${meal.prepTime||0} min</strong></span><span>🔥 Cook <strong>${meal.cookTime||0} min</strong></span></div>
+    </div>
+  </div>
+  <div class="ml-d-acts">
+    <button class="ml-btn ml-btn-g ml-btn-sm" onclick="mlGoEdit(${meal.id})">✏️ Edit</button>
+    <button class="ml-btn ml-btn-g ml-btn-sm" onclick="mlDuplicate(${meal.id})">⧉ Duplicate</button>
+    <button class="ml-btn ml-btn-d ml-btn-sm" onclick="mlDeleteMeal(${meal.id})">🗑 Delete</button>
+  </div>
+  ${addSection}
+  ${strip}
+  <div class="ml-tabs">${tabs.map(t=>`<button class="ml-tab${MLS.tab===t?' on':''}" onclick="MLS.tab='${t}';mlRender()">${tabLabels[t]}</button>`).join('')}</div>
+  ${tabs.map(t=>`<div class="ml-tp${MLS.tab===t?' on':''}">${tabContent[t]||''}</div>`).join('')}`;
+}
+
+function mlRenderForm(){
+  const isEdit=MLS.view==='edit';
+  const meal=isEdit?mlGetMeal(MLS.id):null;
+  const m=meal||{emoji:'',name:'',description:'',servings:4,prepTime:15,cookTime:30,tags:[],main:{ingredients:[{amount:'',unit:'',name:''}],method:[''],nutrition:{perPortion:{calories:0,protein:0,carbs:0,fat:0,fibre:0,salt:0},per100g:{calories:0,protein:0,carbs:0,fat:0,fibre:0,salt:0}}},side:null,notes:''};
+  const hasSide=!!m.side;
+  const s=m.side||{name:'',ingredients:[{amount:'',unit:'',name:''}],method:[''],nutrition:{perPortion:{calories:0,protein:0,carbs:0,fat:0,fibre:0,salt:0},per100g:{calories:0,protein:0,carbs:0,fat:0,fibre:0,salt:0}}};
+
+  function ingRows(ings,cls){
+    return ings.map((i,idx)=>`<div class="ml-rr ${cls}-ml-ing" data-idx="${idx}">
+      <input class="ml-fi ml-amt" placeholder="Amt" value="${mlEsc(i.amount||'')}">
+      <input class="ml-fi ml-unt" placeholder="Unit" value="${mlEsc(i.unit||'')}">
+      <input class="ml-fi" data-ing-name="1" placeholder="Ingredient name *" value="${mlEsc(i.name||'')}">
+      <button class="ml-rmv" onclick="mlRemoveRow(this,'${cls}','ing')" type="button">×</button>
+    </div>`).join('');
+  }
+  function stepRows(steps,cls){
+    return steps.map((st,i)=>`<div class="ml-srr ${cls}-ml-step" data-idx="${i}">
+      <div class="ml-snbadge">${i+1}</div>
+      <textarea class="ml-fi" rows="2" placeholder="Step ${i+1} instructions…">${mlEsc(st)}</textarea>
+      <button class="ml-rmv" onclick="mlRemoveRow(this,'${cls}','step')" type="button">×</button>
+    </div>`).join('');
+  }
+  function nutInputs(n,n1,pfx){
+    const vals=[['cal','Calories (kcal)',n.calories,n1.calories],['pro','Protein (g)',n.protein,n1.protein],['car','Carbs (g)',n.carbs,n1.carbs],['fat','Fat (g)',n.fat,n1.fat],['fib','Fibre (g)',n.fibre,n1.fibre],['sal','Salt (g)',n.salt,n1.salt]];
+    return`<div style="margin-bottom:12px"><div class="ml-fl" style="margin-bottom:7px">Per Portion</div><div class="ml-nfg">${vals.map(([k,l,v])=>`<div class="ml-fg"><label class="ml-fl">${l}</label><input class="ml-fi" type="number" step="0.1" min="0" data-mlnut="${pfx}-pp-${k}" value="${v||0}"></div>`).join('')}</div></div><div><div class="ml-fl" style="margin-bottom:7px">Per 100g</div><div class="ml-nfg">${vals.map(([k,l,v,v1])=>`<div class="ml-fg"><label class="ml-fl">${l}</label><input class="ml-fi" type="number" step="0.1" min="0" data-mlnut="${pfx}-100-${k}" value="${v1||0}"></div>`).join('')}</div></div>`;
+  }
+
+  return`<div class="ml-topbar">
+    <div class="ml-logo" onclick="mlGoList()"><em>Meal</em> Library</div>
+    <button class="ml-btn ml-btn-g ml-btn-sm" onclick="mlGoBack()">← Back</button>
+  </div>
+  <div class="ml-form-wrap">
+  <div class="ml-f-title">${isEdit?'✏️ Edit: '+mlEsc(m.name):'＋ New Meal'}</div>
+  <div class="ml-fs"><div class="ml-fsh">Basic Info</div><div class="ml-fb">
+    <div class="ml-f2">
+      <div class="ml-fg"><label class="ml-fl">Meal Name *</label><input class="ml-fi" id="ml-f-name" placeholder="e.g. Chicken Cacciatore" value="${mlEsc(m.name)}"></div>
+      <div class="ml-fg"><label class="ml-fl">Emoji</label><input class="ml-fi" id="ml-f-emoji" placeholder="🍽️" maxlength="4" value="${mlEsc(m.emoji||'')}"></div>
+    </div>
+    <div class="ml-fg"><label class="ml-fl">Description</label><input class="ml-fi" id="ml-f-desc" placeholder="A short description" value="${mlEsc(m.description||'')}"></div>
+    <div class="ml-f2">
+      <div class="ml-fg"><label class="ml-fl">Servings</label><input class="ml-fi" type="number" id="ml-f-servings" min="1" value="${m.servings||4}"></div>
+      <div class="ml-fg"><label class="ml-fl">Prep Time (mins)</label><input class="ml-fi" type="number" id="ml-f-prep" min="0" value="${m.prepTime||0}"></div>
+    </div>
+    <div class="ml-f2">
+      <div class="ml-fg"><label class="ml-fl">Cook Time (mins)</label><input class="ml-fi" type="number" id="ml-f-cook" min="0" value="${m.cookTime||0}"></div>
+      <div class="ml-fg"><label class="ml-fl">Tags (comma separated)</label><input class="ml-fi" id="ml-f-tags" placeholder="pasta, chicken" value="${mlEsc(m.tags.join(', '))}"></div>
+    </div>
+  </div></div>
+  <div class="ml-fs"><div class="ml-fsh">🍳 Main Ingredients</div><div class="ml-fb">
+    <div class="ml-rep" id="ml-main-ing-rep">${ingRows(m.main.ingredients,'main')}</div>
+    <button class="ml-add-row" onclick="mlAddIngRow('main')" type="button">＋ Add ingredient</button>
+  </div></div>
+  <div class="ml-fs"><div class="ml-fsh">🍳 Main Method</div><div class="ml-fb">
+    <div class="ml-srep" id="ml-main-step-rep">${stepRows(m.main.method,'main')}</div>
+    <button class="ml-add-row" onclick="mlAddStepRow('main')" type="button">＋ Add step</button>
+  </div></div>
+  <div class="ml-fs"><div class="ml-fsh">📊 Main Nutrition</div><div class="ml-fb">${nutInputs(m.main.nutrition.perPortion,m.main.nutrition.per100g,'main')}</div></div>
+  <div class="ml-side-tog" onclick="mlToggleSide()"><div class="ml-tog${hasSide?' on':''}" id="ml-side-tog"></div><span>This meal has a <strong>side dish</strong></span></div>
+  <div id="ml-side-section" style="display:${hasSide?'block':'none'}">
+    <div class="ml-fs"><div class="ml-fsh">🥗 Side Name</div><div class="ml-fb"><div class="ml-fg"><label class="ml-fl">Side Dish Name</label><input class="ml-fi" id="ml-f-side-name" placeholder="e.g. Garden Salad" value="${mlEsc(s.name||'')}"></div></div></div>
+    <div class="ml-fs"><div class="ml-fsh">🥗 Side Ingredients</div><div class="ml-fb"><div class="ml-rep" id="ml-side-ing-rep">${ingRows(s.ingredients,'side')}</div><button class="ml-add-row" onclick="mlAddIngRow('side')" type="button">＋ Add ingredient</button></div></div>
+    <div class="ml-fs"><div class="ml-fsh">🥗 Side Method</div><div class="ml-fb"><div class="ml-srep" id="ml-side-step-rep">${stepRows(s.method,'side')}</div><button class="ml-add-row" onclick="mlAddStepRow('side')" type="button">＋ Add step</button></div></div>
+    <div class="ml-fs"><div class="ml-fsh">📊 Side Nutrition</div><div class="ml-fb">${nutInputs(s.nutrition.perPortion,s.nutrition.per100g,'side')}</div></div>
+  </div>
+  <div class="ml-fs"><div class="ml-fsh">📝 Notes</div><div class="ml-fb"><textarea class="ml-fi" id="ml-f-notes" rows="4" placeholder="Substitutions, batch cook tips…">${mlEsc(m.notes||'')}</textarea></div></div>
+  <div style="display:flex;gap:10px;margin-top:6px">
+    <button class="ml-btn ml-btn-p" onclick="mlSaveForm()" style="flex:1">💾 Save Meal</button>
+    <button class="ml-btn ml-btn-g" onclick="mlGoBack()">Cancel</button>
+  </div>
+  </div>`;
+}
+
+// ── NAVIGATION ──
+function mlGoList(){MLS.view='list';MLS.id=null;mlRender();}
+function mlGoDetail(id){MLS.view='detail';MLS.id=id;MLS.tab='ingredients';mlRender();}
+function mlGoEdit(id){MLS.view='edit';MLS.id=id;mlRender();}
+function mlGoAdd(){MLS.view='add';MLS.id=null;mlRender();}
+function mlGoBack(){MLS.id?mlGoDetail(MLS.id):mlGoList();}
+
+// ── FILTERS ──
+function mlFilterTag(tag){
+  if(MLS.filters.includes(tag))MLS.filters=MLS.filters.filter(f=>f!==tag);
+  else MLS.filters.push(tag);
+  mlRender();
+}
+
+// ── FORM HELPERS ──
+function mlAddIngRow(section){
+  const rep=document.getElementById('ml-'+section+'-ing-rep');
+  if(!rep)return;
+  const div=document.createElement('div');
+  div.className='ml-rr '+section+'-ml-ing';
+  div.innerHTML=`<input class="ml-fi ml-amt" placeholder="Amt" value=""><input class="ml-fi ml-unt" placeholder="Unit" value=""><input class="ml-fi" data-ing-name="1" placeholder="Ingredient name *" value=""><button class="ml-rmv" onclick="mlRemoveRow(this,'${section}','ing')" type="button">×</button>`;
+  rep.appendChild(div);
+  div.querySelector('[data-ing-name]').focus();
+}
+function mlAddStepRow(section){
+  const rep=document.getElementById('ml-'+section+'-step-rep');
+  if(!rep)return;
+  const rows=rep.querySelectorAll('.'+section+'-ml-step');
+  const idx=rows.length;
+  const div=document.createElement('div');
+  div.className='ml-srr '+section+'-ml-step';
+  div.innerHTML=`<div class="ml-snbadge">${idx+1}</div><textarea class="ml-fi" rows="2" placeholder="Step instructions…"></textarea><button class="ml-rmv" onclick="mlRemoveRow(this,'${section}','step')" type="button">×</button>`;
+  rep.appendChild(div);
+  div.querySelector('textarea').focus();
+}
+function mlRemoveRow(btn,section,type){
+  const row=btn.closest('.'+section+'-ml-'+type);
+  if(row)row.remove();
+  if(type==='step'){
+    document.querySelectorAll('.'+section+'-ml-step').forEach((r,i)=>{const b=r.querySelector('.ml-snbadge');if(b)b.textContent=i+1;});
+  }
+}
+function mlToggleSide(){
+  const tog=document.getElementById('ml-side-tog');
+  const sec=document.getElementById('ml-side-section');
+  if(!tog||!sec)return;
+  tog.classList.toggle('on');
+  sec.style.display=tog.classList.contains('on')?'block':'none';
+}
+function mlReadIngs(section){
+  return Array.from(document.querySelectorAll('.'+section+'-ml-ing')).map(row=>({
+    amount:row.querySelector('.ml-amt')?.value.trim()||'',
+    unit:row.querySelector('.ml-unt')?.value.trim()||'',
+    name:row.querySelector('[data-ing-name]')?.value.trim()||''
+  })).filter(i=>i.name);
+}
+function mlReadMethod(section){
+  return Array.from(document.querySelectorAll('.'+section+'-ml-step textarea')).map(ta=>ta.value.trim()).filter(Boolean);
+}
+function mlReadNut(pfx){
+  const f=k=>parseFloat(document.querySelector('[data-mlnut="'+pfx+'-pp-'+k+'"]')?.value)||0;
+  const g=k=>parseFloat(document.querySelector('[data-mlnut="'+pfx+'-100-'+k+'"]')?.value)||0;
+  return{perPortion:{calories:f('cal'),protein:f('pro'),carbs:f('car'),fat:f('fat'),fibre:f('fib'),salt:f('sal')},per100g:{calories:g('cal'),protein:g('pro'),carbs:g('car'),fat:g('fat'),fibre:g('fib'),salt:g('sal')}};
+}
+function mlSaveForm(){
+  const name=document.getElementById('ml-f-name')?.value.trim();
+  if(!name){alert('Please enter a meal name.');return;}
+  const hasSide=document.getElementById('ml-side-tog')?.classList.contains('on');
+  const tags=(document.getElementById('ml-f-tags')?.value||'').split(',').map(t=>t.trim()).filter(Boolean);
+  const data={
+    name,emoji:document.getElementById('ml-f-emoji')?.value.trim()||'🍽️',
+    description:document.getElementById('ml-f-desc')?.value.trim()||'',
+    servings:parseInt(document.getElementById('ml-f-servings')?.value)||4,
+    prepTime:parseInt(document.getElementById('ml-f-prep')?.value)||0,
+    cookTime:parseInt(document.getElementById('ml-f-cook')?.value)||0,
+    tags,
+    main:{ingredients:mlReadIngs('main'),method:mlReadMethod('main'),nutrition:mlReadNut('main')},
+    side:hasSide?{name:document.getElementById('ml-f-side-name')?.value.trim()||'Side',ingredients:mlReadIngs('side'),method:mlReadMethod('side'),nutrition:mlReadNut('side')}:null,
+    notes:document.getElementById('ml-f-notes')?.value.trim()||''
+  };
+  if(MLS.view==='edit'&&MLS.id){
+    const idx=mlMeals.findIndex(m=>m.id===MLS.id);
+    if(idx!==-1)mlMeals[idx]={...mlMeals[idx],...data};
+    mlSaveMeals();MLS.view='detail';mlRender();
+  } else {
+    const newId=mlMeals.length?Math.max(...mlMeals.map(m=>m.id))+1:1;
+    mlMeals.push({id:newId,createdAt:new Date().toISOString().split('T')[0],...data});
+    mlSaveMeals();MLS.view='detail';MLS.id=newId;mlRender();
+  }
+}
+function mlDuplicate(id){
+  const meal=mlGetMeal(id);if(!meal)return;
+  const newId=Math.max(...mlMeals.map(m=>m.id))+1;
+  const copy=JSON.parse(JSON.stringify(meal));
+  copy.id=newId;copy.name=copy.name+' (copy)';copy.createdAt=new Date().toISOString().split('T')[0];
+  mlMeals.push(copy);mlSaveMeals();MLS.view='detail';MLS.id=newId;mlRender();
+}
+function mlDeleteMeal(id){
+  const meal=mlGetMeal(id);if(!meal)return;
+  if(!confirm('Delete '+meal.name+'? This cannot be undone.'))return;
+  mlMeals=mlMeals.filter(m=>m.id!==id);mlSaveMeals();mlGoList();
+}
+
+// ── RANDOM PICKER ──
+function mlPickRandom(){
+  if(!mlMeals.length)return;
+  const pool=mlMeals.filter(m=>!m.sideOnly);
+  const meal=pool[Math.floor(Math.random()*pool.length)];
+  mlPickedId=meal.id;mlShowPicker(meal);
+}
+function mlPickAnother(){
+  const pool=mlMeals.filter(m=>!m.sideOnly&&m.id!==mlPickedId);
+  if(!pool.length)return;
+  const meal=pool[Math.floor(Math.random()*pool.length)];
+  mlPickedId=meal.id;mlShowPicker(meal);
+}
+function mlShowPicker(meal){
+  const tot=mlGetTotal(meal,'perPortion');
+  const cc=mlCalClass(tot.calories);
+  const colors={'ml-cal-lo':'#6b9e72','ml-cal-mid':'#d4933a','ml-cal-hi':'#e07060'};
+  const bgs={'ml-cal-lo':'rgba(107,158,114,.13)','ml-cal-mid':'rgba(212,147,58,.14)','ml-cal-hi':'rgba(190,70,60,.14)'};
+  const el=document.getElementById('ml-picker');if(!el)return;
+  el.querySelector('#ml-pk-emj').textContent=meal.emoji||'🍽️';
+  el.querySelector('#ml-pk-title').textContent=meal.name;
+  el.querySelector('#ml-pk-desc').textContent=meal.description||'';
+  const cal=el.querySelector('#ml-pk-cal');
+  cal.textContent=tot.calories+' kcal per portion';
+  cal.style.background=bgs[cc];cal.style.color=colors[cc];
+  el.classList.add('vis');
+}
+function mlClosePicker(){
+  const el=document.getElementById('ml-picker');if(el)el.classList.remove('vis');
+}
+function mlGoPickedMeal(){mlClosePicker();mlGoDetail(mlPickedId);}
+
+// ── INTEGRATION: ADD TO TRACKER ──
+function mlAddToTracker(mealId, mealSlot){
+  const meal = mlGetMeal(mealId);
+  if (!meal) return;
+  const tot = mlGetTotal(meal, 'perPortion');
+  const item = {
+    name:    meal.name,
+    kcal:    tot.calories   || 0,
+    protein: tot.protein    || 0,
+    fibre:   tot.fibre      || 0,
+  };
+  // Switch to calories tab first
+  tab('calories');
+  // Small delay so the panel is visible before adding
+  setTimeout(() => {
+    addMealItem(mealSlot, item);
+    saveCalories();
+    showToast('✅ ' + meal.name + ' added to ' + mealSlot + ' (' + tot.calories + ' kcal)');
+  }, 120);
+}
+
+// ── INIT ──
+function initMealLibrary(){
+  mlLoadMeals();
+  mlRender();
+}
 </script>
 </body>
 </html>
