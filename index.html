@@ -94,8 +94,10 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
 @media(max-width:600px){.sync-input-grid{grid-template-columns:1fr}}
 
 /* ── TABS ── */
-.tabs{display:flex;gap:2px;margin:28px 0 0;border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
-.tabs::-webkit-scrollbar{display:none}
+.tabs{display:flex;gap:2px;margin:28px 0 0;border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;-webkit-overflow-scrolling:touch;position:relative}
+.tabs::-webkit-scrollbar{height:3px}
+.tabs::-webkit-scrollbar-track{background:transparent}
+.tabs::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 .tab-btn{background:none;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;letter-spacing:.8px;text-transform:uppercase;padding:11px 20px;cursor:pointer;position:relative;transition:color .2s;white-space:nowrap;flex-shrink:0}
 .tab-btn::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--neon);transform:scaleX(0);transition:transform .25s;box-shadow:0 0 10px var(--neon)}
 .tab-btn.active{color:var(--neon)}
@@ -146,7 +148,7 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
 .btn-blue{background:linear-gradient(135deg,var(--blue),#1d4ed8)}
 
 /* ── CALORIE RING ── */
-.calorie-hero{display:flex;align-items:center;gap:36px;flex-wrap:wrap}
+.calorie-hero{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap}
 .ring-wrap{position:relative;width:190px;height:190px;flex-shrink:0}
 .ring-svg{transform:rotate(-90deg);width:190px;height:190px}
 .ring-track{fill:none;stroke:rgba(255,255,255,0.06);stroke-width:14}
@@ -157,7 +159,7 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
 .ring-sub{font-size:11px;margin-top:3px;font-family:'JetBrains Mono',monospace}
 
 /* ── MEAL GRID ── */
-.meal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;min-width:260px}
+.meal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;min-width:0;width:100%}
 
 /* ── DANGER BANNER ── */
 .danger-banner{display:none;align-items:center;gap:12px;padding:13px 18px;background:rgba(255,61,90,0.09);border:1px solid rgba(255,61,90,0.35);border-radius:12px;margin-top:14px}
@@ -559,6 +561,17 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
 #panel-meals .ml-picker-acts{display:flex;gap:8px;justify-content:center}
 #panel-meals .ml-picker-close{position:absolute;top:11px;right:11px;background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;padding:4px}
 #panel-meals .ml-picker-close:hover{color:var(--text)}
+
+/* ── MOBILE CALORIE HERO ── */
+@media(max-width:520px){
+  .calorie-hero{gap:12px}
+  .ring-wrap{width:160px;height:160px;align-self:center}
+  .ring-svg{width:160px;height:160px}
+  .ring-num{font-size:34px}
+  .burnt-pill{min-width:0;flex:1}
+  .meal-grid{grid-template-columns:1fr 1fr;min-width:0;width:100%}
+  .meal-section-head{flex-wrap:wrap;gap:4px}
+}
 </style>
 </head>
 <body>
