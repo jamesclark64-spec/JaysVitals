@@ -563,14 +563,17 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
 #panel-meals .ml-picker-close:hover{color:var(--text)}
 
 /* ── MOBILE CALORIE HERO ── */
-@media(max-width:520px){
-  .calorie-hero{gap:12px}
-  .ring-wrap{width:160px;height:160px;align-self:center}
-  .ring-svg{width:160px;height:160px}
-  .ring-num{font-size:34px}
+@media(max-width:600px){
+  /* Force meal grid onto its own full-width row */
+  .calorie-hero{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center}
+  .ring-wrap{grid-column:1;grid-row:1;width:140px;height:140px;justify-self:center}
+  .ring-svg{width:140px;height:140px}
+  .ring-num{font-size:32px}
+  /* Burnt / net pills stack in top-right cell */
+  .calorie-hero > div:nth-child(2){grid-column:2;grid-row:1;display:flex;flex-direction:column;gap:8px;align-self:center}
   .burnt-pill{min-width:0;flex:1}
-  .meal-grid{grid-template-columns:1fr 1fr;min-width:0;width:100%}
-  .meal-section-head{flex-wrap:wrap;gap:4px}
+  /* Meal grid spans full width below */
+  .meal-grid{grid-column:1/-1;grid-row:2;width:100%;min-width:0}
 }
 </style>
 </head>
