@@ -564,16 +564,23 @@ header{padding:28px 0 0;display:flex;align-items:flex-end;justify-content:space-
 
 /* ── MOBILE CALORIE HERO ── */
 @media(max-width:600px){
-  /* Force meal grid onto its own full-width row */
-  .calorie-hero{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center}
-  .ring-wrap{grid-column:1;grid-row:1;width:140px;height:140px;justify-self:center}
-  .ring-svg{width:140px;height:140px}
-  .ring-num{font-size:32px}
-  /* Burnt / net pills stack in top-right cell */
-  .calorie-hero > div:nth-child(2){grid-column:2;grid-row:1;display:flex;flex-direction:column;gap:8px;align-self:center}
-  .burnt-pill{min-width:0;flex:1}
-  /* Meal grid spans full width below */
-  .meal-grid{grid-column:1/-1;grid-row:2;width:100%;min-width:0}
+  .calorie-hero{flex-direction:column;gap:12px;align-items:stretch}
+  /* Ring + pills sit side by side in a row */
+  .calorie-hero > .ring-wrap{flex-shrink:0;align-self:center}
+  /* The burnt/net pill wrapper becomes a row */
+  .calorie-hero > div:not(.ring-wrap):not(.meal-grid){
+    display:flex;flex-direction:row;gap:8px;width:100%
+  }
+  .burnt-pill{flex:1;min-width:0}
+  /* Meal grid always full width */
+  .meal-grid{width:100%;min-width:0;box-sizing:border-box}
+  .meal-add-row{width:100%;box-sizing:border-box}
+  .meal-add-row .kcal-inp{min-width:0;flex:1;width:auto}
+}
+
+@media(max-width:400px){
+  .wrap{padding:0 12px}
+  .card{padding:18px 14px}
 }
 </style>
 </head>
